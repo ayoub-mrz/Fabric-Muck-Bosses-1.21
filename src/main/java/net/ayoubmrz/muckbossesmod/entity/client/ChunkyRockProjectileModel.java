@@ -1,0 +1,35 @@
+package net.ayoubmrz.muckbossesmod.entity.client;
+
+import net.ayoubmrz.muckbossesmod.MuckBossesMod;
+import net.ayoubmrz.muckbossesmod.entity.custom.ChiefSpearProjectileEntity;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
+
+public class ChunkyRockProjectileModel extends EntityModel<ChiefSpearProjectileEntity> {
+    public static final EntityModelLayer CHUNKY_ROCK = new EntityModelLayer(Identifier.of(MuckBossesMod.MOD_ID, "chunky_rock"), "main");
+    private final ModelPart chunky_rock;
+
+    public ChunkyRockProjectileModel(ModelPart root) {
+        this.chunky_rock = root.getChild("chunky_rock");
+    }
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        ModelPartData chunky_rock = modelPartData.addChild("chunky_rock", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -14.0F, -8.0F, 16.0F, 14.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 14.0F, 0.0F));
+        return TexturedModelData.of(modelData, 64, 64);
+    }
+
+    @Override
+    public void setAngles(ChiefSpearProjectileEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+
+    }
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        chunky_rock.render(matrices, vertexConsumer, light, overlay, color);
+    }
+}

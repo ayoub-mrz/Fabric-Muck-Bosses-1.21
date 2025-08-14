@@ -1,0 +1,18 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.gronk.idle": {
+			"loop": true
+		},
+		"animation.gronk.attack": {
+			"loop": true
+		},
+		"animation.gronk.shoot": {
+			"loop": true
+		},
+		"animation.gronk.shoot2": {
+			"loop": true
+		}
+	},
+	"geckolib_format_version": 2
+}
