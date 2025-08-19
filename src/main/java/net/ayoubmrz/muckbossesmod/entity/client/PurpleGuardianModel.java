@@ -1,8 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.client;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.PurpleGuardianEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.YellowGuardianEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.PurpleGuardianEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.animation.AnimationState;

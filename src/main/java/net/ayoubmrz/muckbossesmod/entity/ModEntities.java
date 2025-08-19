@@ -1,7 +1,9 @@
 package net.ayoubmrz.muckbossesmod.entity;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.*;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.*;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.*;
+import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
@@ -13,7 +15,7 @@ public class ModEntities {
     public static final EntityType<GronkEntity> GRONK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "gronk"),
             EntityType.Builder.create(GronkEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(2.0f, 5.4f).build());
+                    .dimensions(1.8f, 4f).build());
 
     public static final EntityType<WhiteGuardianEntity> WHITE_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "white_guardian"),

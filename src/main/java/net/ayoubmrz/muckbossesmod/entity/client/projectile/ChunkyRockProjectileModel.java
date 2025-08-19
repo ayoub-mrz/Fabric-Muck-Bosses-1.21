@@ -1,7 +1,7 @@
-package net.ayoubmrz.muckbossesmod.entity.client;
+package net.ayoubmrz.muckbossesmod.entity.client.projectile;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.ChiefSpearProjectileEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.ChiefSpearProjectileEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;

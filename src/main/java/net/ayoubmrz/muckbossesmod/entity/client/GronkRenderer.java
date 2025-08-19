@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.client;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.GronkEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;

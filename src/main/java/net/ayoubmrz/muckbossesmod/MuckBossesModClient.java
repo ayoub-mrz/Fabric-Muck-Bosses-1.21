@@ -2,6 +2,7 @@ package net.ayoubmrz.muckbossesmod;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.client.*;
+import net.ayoubmrz.muckbossesmod.entity.client.projectile.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;

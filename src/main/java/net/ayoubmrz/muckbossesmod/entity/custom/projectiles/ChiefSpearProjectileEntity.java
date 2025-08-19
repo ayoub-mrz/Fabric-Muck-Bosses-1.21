@@ -1,4 +1,4 @@
-package net.ayoubmrz.muckbossesmod.entity.custom;
+package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.item.ModItems;
 import net.minecraft.client.util.math.Vector2f;
@@ -18,13 +18,13 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
+public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
     private float rotation;
     public Vector2f groundedOffset;
     private final Set<Entity> hitEntities = new HashSet<>();
     private boolean hasHitPlayer = false;
 
-    public GronkBladeProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
+    public ChiefSpearProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -39,11 +39,6 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
 
     public boolean isGrounded() {
         return inGround;
-    }
-
-    @Override
-    public boolean hasNoGravity() {
-        return super.hasNoGravity();
     }
 
     @Override

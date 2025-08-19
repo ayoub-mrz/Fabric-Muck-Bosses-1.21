@@ -1,4 +1,4 @@
-package net.ayoubmrz.muckbossesmod.entity.custom;
+package net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -25,20 +25,20 @@ import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceC
 import software.bernie.geckolib.animation.*;
 
 
-public class BigChunkEntity extends HostileEntity implements GeoEntity {
+public class YellowGuardianEntity extends HostileEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
-    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(BigChunkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(YellowGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
 
-    private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Big Chunk"),
+    private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Yellow Guardian"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
 
-    public BigChunkEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public YellowGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -117,12 +117,12 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+//        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
         controllers.add(new AnimationController<>(this, "attackController", 0, this::attackPredicate));
         controllers.add(new AnimationController<>(this, "shootController", 0, this::shootPredicate));
     }
 
-    private PlayState shootPredicate(AnimationState<BigChunkEntity> event) {
+    private PlayState shootPredicate(AnimationState<YellowGuardianEntity> event) {
 
         if (this.isShooting()) {
             event.getController().forceAnimationReset();
@@ -136,7 +136,7 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    private PlayState attackPredicate(AnimationState<BigChunkEntity> event) {
+    private PlayState attackPredicate(AnimationState<YellowGuardianEntity> event) {
         if (this.handSwinging) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
@@ -149,7 +149,7 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    private PlayState predicate(AnimationState<BigChunkEntity> animationState) {
+    private PlayState predicate(AnimationState<YellowGuardianEntity> animationState) {
         var controller = animationState.getController();
 
         if (animationState.isMoving() && !this.isShooting()) {

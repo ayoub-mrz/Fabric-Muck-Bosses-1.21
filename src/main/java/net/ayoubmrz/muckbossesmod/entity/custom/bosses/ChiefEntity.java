@@ -1,4 +1,4 @@
-package net.ayoubmrz.muckbossesmod.entity.custom;
+package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -117,7 +117,7 @@ public class ChiefEntity extends HostileEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+//        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
         controllers.add(new AnimationController<>(this, "attackController", 0, this::attackPredicate));
         controllers.add(new AnimationController<>(this, "shootController", 0, this::shootPredicate));
     }

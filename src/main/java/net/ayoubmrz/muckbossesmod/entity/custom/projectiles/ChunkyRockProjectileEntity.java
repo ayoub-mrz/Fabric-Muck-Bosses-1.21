@@ -1,4 +1,4 @@
-package net.ayoubmrz.muckbossesmod.entity.custom;
+package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.item.ModItems;
 import net.minecraft.client.util.math.Vector2f;
@@ -18,13 +18,13 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
+public class ChunkyRockProjectileEntity extends PersistentProjectileEntity {
     private float rotation;
     public Vector2f groundedOffset;
     private final Set<Entity> hitEntities = new HashSet<>();
     private boolean hasHitPlayer = false;
 
-    public GronkSwordProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
+    public ChunkyRockProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
 

@@ -1,7 +1,7 @@
-package net.ayoubmrz.muckbossesmod.entity.client;
+package net.ayoubmrz.muckbossesmod.entity.client.projectile;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.ChiefSpearProjectileEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GuardianLazerProjectileEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -13,16 +13,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class ChiefSpearProjectileRenderer extends EntityRenderer<ChiefSpearProjectileEntity> {
-    protected ChiefSpearProjectileModel model;
+public class GuardianLazerProjectileRenderer extends EntityRenderer<GuardianLazerProjectileEntity> {
+    protected GuardianLazerProjectileModel model;
 
-    public ChiefSpearProjectileRenderer(EntityRendererFactory.Context ctx) {
+    public GuardianLazerProjectileRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new ChiefSpearProjectileModel(ctx.getPart(ChiefSpearProjectileModel.CHIEF_SPEAR));
+        this.model = new GuardianLazerProjectileModel(ctx.getPart(GuardianLazerProjectileModel.GUARDIANLAZER));
     }
 
     @Override
-    public void render(ChiefSpearProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrices,
+    public void render(GuardianLazerProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
@@ -38,7 +38,7 @@ public class ChiefSpearProjectileRenderer extends EntityRenderer<ChiefSpearProje
         }
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
-                this.model.getLayer(Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/chief_spear.png")), false, false);
+                this.model.getLayer(Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian_lazer.png")), false, false);
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
         matrices.pop();
@@ -46,7 +46,7 @@ public class ChiefSpearProjectileRenderer extends EntityRenderer<ChiefSpearProje
     }
 
     @Override
-    public Identifier getTexture(ChiefSpearProjectileEntity entity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/chief_spear.png");
+    public Identifier getTexture(GuardianLazerProjectileEntity entity) {
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian_lazer.png");
     }
 }

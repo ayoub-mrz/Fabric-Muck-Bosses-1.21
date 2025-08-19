@@ -1,7 +1,8 @@
 package net.ayoubmrz.muckbossesmod;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
-import net.ayoubmrz.muckbossesmod.entity.custom.*;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.*;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.*;
 import net.ayoubmrz.muckbossesmod.item.ModItemGroups;
 import net.ayoubmrz.muckbossesmod.item.ModItems;
 import net.fabricmc.api.ModInitializer;

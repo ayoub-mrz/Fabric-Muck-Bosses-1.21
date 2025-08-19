@@ -1,8 +1,7 @@
-package net.ayoubmrz.muckbossesmod.entity.client;
+package net.ayoubmrz.muckbossesmod.entity.client.projectile;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.ChiefSpearProjectileEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.GronkSwordProjectileEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkBladeProjectileEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -14,16 +13,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class GronkSwordProjectileRenderer extends EntityRenderer<GronkSwordProjectileEntity> {
-    protected GronkSwordProjectileModel model;
+public class GronkBladeProjectileRenderer extends EntityRenderer<GronkBladeProjectileEntity> {
+    protected GronkBladeProjectileModel model;
 
-    public GronkSwordProjectileRenderer(EntityRendererFactory.Context ctx) {
+    public GronkBladeProjectileRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new GronkSwordProjectileModel(ctx.getPart(GronkSwordProjectileModel.GRONK_SWORD));
+        this.model = new GronkBladeProjectileModel(ctx.getPart(GronkBladeProjectileModel.GRONK_BLADE));
     }
 
     @Override
-    public void render(GronkSwordProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrices,
+    public void render(GronkBladeProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
@@ -39,7 +38,7 @@ public class GronkSwordProjectileRenderer extends EntityRenderer<GronkSwordProje
         }
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
-                this.model.getLayer(Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/gronk_sword.png")), false, false);
+                this.model.getLayer(Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/blue_blade.png")), false, false);
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
         matrices.pop();
@@ -47,7 +46,7 @@ public class GronkSwordProjectileRenderer extends EntityRenderer<GronkSwordProje
     }
 
     @Override
-    public Identifier getTexture(GronkSwordProjectileEntity entity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/gronk_sword.png");
+    public Identifier getTexture(GronkBladeProjectileEntity entity) {
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/blue_blade.png");
     }
 }

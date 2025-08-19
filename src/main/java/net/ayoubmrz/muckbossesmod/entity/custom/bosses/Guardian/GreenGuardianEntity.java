@@ -1,7 +1,12 @@
-package net.ayoubmrz.muckbossesmod.entity.custom;
+package net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian;
 
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
@@ -18,23 +23,22 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.animation.AnimationState;
 
 
-public class GronkEntity extends HostileEntity implements GeoEntity {
+public class GreenGuardianEntity extends HostileEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
-    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(GronkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(GreenGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
 
-    private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Gronk"),
+    private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Green Guardian"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
 
-    public GronkEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public GreenGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -113,12 +117,12 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+//        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
         controllers.add(new AnimationController<>(this, "attackController", 0, this::attackPredicate));
         controllers.add(new AnimationController<>(this, "shootController", 0, this::shootPredicate));
     }
 
-    private PlayState shootPredicate(AnimationState<GronkEntity> event) {
+    private PlayState shootPredicate(AnimationState<GreenGuardianEntity> event) {
 
         if (this.isShooting()) {
             event.getController().forceAnimationReset();
@@ -132,7 +136,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    private PlayState attackPredicate(AnimationState<GronkEntity> event) {
+    private PlayState attackPredicate(AnimationState<GreenGuardianEntity> event) {
         if (this.handSwinging) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
@@ -145,7 +149,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    private PlayState predicate(AnimationState<GronkEntity> animationState) {
+    private PlayState predicate(AnimationState<GreenGuardianEntity> animationState) {
         var controller = animationState.getController();
 
         if (animationState.isMoving() && !this.isShooting()) {

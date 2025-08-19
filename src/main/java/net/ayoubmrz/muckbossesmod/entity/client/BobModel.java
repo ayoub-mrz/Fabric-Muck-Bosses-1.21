@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.client;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.BobEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BobEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.animation.AnimationState;

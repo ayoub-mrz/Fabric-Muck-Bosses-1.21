@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.client;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
-import net.ayoubmrz.muckbossesmod.entity.custom.GronkEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.animation.AnimationState;
@@ -33,11 +33,9 @@ public class GronkModel<T extends GronkEntity> extends GeoModel<GronkEntity> {
 
         if (head != null) {
             EntityModelData entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+
             head.setRotX(entityData.headPitch() * MathHelper.RADIANS_PER_DEGREE);
-            head.setRotY(entityData.netHeadYaw() * MathHelper.RADIANS_PER_DEGREE);
+            // head.setRotY(entityData.netHeadYaw() * MathHelper.RADIANS_PER_DEGREE);
         }
     }
-
-
-
 }
