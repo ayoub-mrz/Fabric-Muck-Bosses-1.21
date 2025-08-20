@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod;
 
+import net.ayoubmrz.muckbossesmod.command.GronkBladeCommand;
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.*;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.*;
@@ -22,6 +23,8 @@ public class MuckBossesMod implements ModInitializer {
 		ModEntities.registerModEntities();
 
 		ModItemGroups.registerItemGroups();
+
+		GronkBladeCommand.register();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.GRONK, GronkEntity.setAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.WHITE_GUARDIAN, WhiteGuardianEntity.setAttributes());

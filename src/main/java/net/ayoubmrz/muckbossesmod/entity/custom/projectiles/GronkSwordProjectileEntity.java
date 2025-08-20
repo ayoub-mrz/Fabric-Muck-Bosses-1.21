@@ -48,6 +48,14 @@ public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
         return super.hasNoGravity();
     }
 
+    public float getRenderingRotation() {
+        rotation += 0.5f;
+        if(rotation >= 360) {
+            rotation = 0;
+        }
+        return rotation;
+    }
+
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity hitEntity = entityHitResult.getEntity();
@@ -86,44 +94,6 @@ public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
     @Override
     protected void onBlockHit(BlockHitResult result) {
         super.onBlockHit(result);
-        Direction side = result.getSide();
-
-        if(side == Direction.SOUTH) {
-            groundedOffset = new Vector2f(215f,180f);
-        }
-        else if(side == Direction.NORTH) {
-            groundedOffset = new Vector2f(215f, 0f);
-        }
-        else if(side == Direction.EAST) {
-            groundedOffset = new Vector2f(215f,-90f);
-        }
-        else if(side == Direction.WEST) {
-            groundedOffset = new Vector2f(215f,90f);
-        }
-        else if(side == Direction.DOWN) {
-            groundedOffset = new Vector2f(115f,180f);
-        }
-        else if(side == Direction.UP) {
-            if (groundedOffset == null) {
-                System.out.println(this.getFacing());
-                switch(this.getFacing()) {
-                    case NORTH:
-                        groundedOffset = new Vector2f(285f,0f);
-                        break;
-                    case SOUTH:
-                        groundedOffset = new Vector2f(285f,180f);
-                        break;
-                    case WEST:
-                        groundedOffset = new Vector2f(285f,-90f);
-                        break;
-                    case EAST:
-                        groundedOffset = new Vector2f(285f,90f);
-                        break;
-                    default:
-                        groundedOffset = new Vector2f(285f,180f);
-                        break;
-                }
-            }
-        }
+        this.discard();
     }
 }

@@ -32,6 +32,8 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(GronkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    private static final TrackedData<Boolean> IS_SHOOTINGBLADES = DataTracker.registerData(GronkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
@@ -41,7 +43,6 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     public GronkEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-//        this.setStackInHand(Hand.MAIN_HAND, new ItemStack(ModItems.GRONK_SWORD));
     }
 
     @Override
@@ -54,6 +55,14 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
             if (windupTicks <= 0) {
                 performAttack();
                 isAttackWindingUp = false;
+            }
+        }
+
+        if (isShooting()) {
+            shootingTicks++;
+            if (shootingTicks > 5) {
+                setShooting(false);
+                shootingTicks = 0;
             }
         }
 
@@ -91,6 +100,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(IS_SHOOTING, false);
+        builder.add(IS_SHOOTINGBLADES, false);
     }
 
     public boolean isShooting() {
@@ -101,6 +111,14 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
         this.dataTracker.set(IS_SHOOTING, shooting);
     }
 
+    public boolean isShootingBlades() {
+        return this.dataTracker.get(IS_SHOOTINGBLADES);
+    }
+
+    public void setShootingBlades(boolean shooting) {
+        this.dataTracker.set(IS_SHOOTINGBLADES, shooting);
+    }
+
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
@@ -109,11 +127,6 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0F)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);
     }
-
-//    @Override
-//    protected EntityNavigation createNavigation(World world) {
-//        return new MMPathNavigateGround(this, world);
-//    }
 
     @Override
     protected void initGoals() {
@@ -140,6 +153,14 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
                     RawAnimation.begin().then("animation.gronk.shoot", Animation.LoopType.PLAY_ONCE)
             );
             setShooting(false);
+            return PlayState.CONTINUE;
+        }
+        if (this.isShootingBlades()) {
+            event.getController().forceAnimationReset();
+            event.getController().setAnimation(
+                    RawAnimation.begin().then("animation.gronk.shoot2", Animation.LoopType.PLAY_ONCE)
+            );
+            setShootingBlades(false);
             return PlayState.CONTINUE;
         }
 

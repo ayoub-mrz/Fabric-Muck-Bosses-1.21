@@ -26,15 +26,15 @@ public class GronkBladeProjectileRenderer extends EntityRenderer<GronkBladeProje
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
-        if(entity.groundedOffset != null) {
-            if(!entity.isGrounded()) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-                matrices.translate(0, -1.0f, 0);
-            } else {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.groundedOffset.getY()));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.groundedOffset.getX()));
-                matrices.translate(0, -0.5f, 0);
-            }
+        matrices.scale(1.4f, 1.4f, 1.4f);
+
+        if(!entity.isGrounded()) {
+            float entityYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
+            float entityPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch());
+
+             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entityYaw));
+             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entityPitch));
+
         }
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
