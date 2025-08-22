@@ -1,21 +1,28 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GronkMeleeAttackGoal;
 import net.ayoubmrz.muckbossesmod.item.ModItems;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 import java.util.HashSet;
@@ -27,6 +34,7 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     private float damage = 20.0f;
     private Vec3d originalVelocity;
     private double targetSpeed = 0.8;
+    private float knockbackStrength = 1.0F;
 
     public GronkBladeProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -38,27 +46,92 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
         this.setOwner(owner);
         this.setPosition(owner.getX(), owner.getEyeY() - 0.1, owner.getZ());
         this.setNoGravity(true);
+        this.getWorld().playSound(
+                null,
+                this.getX(),
+                this.getY(),
+                this.getZ(),
+                SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT,
+                SoundCategory.HOSTILE,
+                1.0f,
+                0.8f
+        );
     }
 
     @Override
     public void tick() {
 
-        if (this.age > 400) {
+        if (this.age > 200) {
             this.discard();
             return;
         }
 
         super.tick();
 
+        if (isInsideBlock() || willHitBlock()) {
+            this.noClip = true;
+        } else {
+            this.noClip = false;
+        }
+
+        this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                ModSounds.BLADE_MOVE, SoundCategory.NEUTRAL, 0.4f, 0.2f);
+
         if (this.originalVelocity != null) {
             this.setVelocity(this.originalVelocity);
         }
-
         this.age++;
     }
 
-    public void move(MovementType movementType, Vec3d movement) {
-        this.checkBlockCollision();
+    private boolean isInsideBlock() {
+        Box entityBox = this.getBoundingBox();
+        return hasCollisionInBox(entityBox);
+    }
+
+    private boolean willHitBlock() {
+        if (this.originalVelocity == null) return false;
+
+        Box currentBox = this.getBoundingBox();
+        Box nextBox = currentBox.offset(this.originalVelocity);
+
+        return hasCollisionInBox(nextBox);
+    }
+
+    private boolean hasCollisionInBox(Box box) {
+        World world = this.getWorld();
+
+        int minX = (int) Math.floor(box.minX);
+        int minY = (int) Math.floor(box.minY);
+        int minZ = (int) Math.floor(box.minZ);
+        int maxX = (int) Math.floor(box.maxX);
+        int maxY = (int) Math.floor(box.maxY);
+        int maxZ = (int) Math.floor(box.maxZ);
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    BlockState blockState = world.getBlockState(pos);
+
+                    if (blockState.isAir()) {
+                        continue;
+                    }
+
+                    VoxelShape collisionShape = blockState.getCollisionShape(world, pos);
+                    if (!collisionShape.isEmpty()) {
+                        VoxelShape offsetShape = collisionShape.offset(x, y, z);
+
+                        for (Box collisionBox : offsetShape.getBoundingBoxes()) {
+                            if (box.intersects(collisionBox)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public void setStableVelocity(Vec3d velocity) {
@@ -68,10 +141,30 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     }
 
     public static void spawnBladeSpread(World world, LivingEntity thrower) {
+        spawnBladeSpread(world, thrower, null);
+    }
+
+    public static void spawnBladeSpread(World world, LivingEntity thrower, Vec3d targetPos) {
         if (world.isClient) return;
 
-        float baseYaw = thrower.getYaw();
-        float basePitch = thrower.getPitch();
+        float baseYaw;
+        float basePitch;
+
+        if (targetPos != null) {
+            // Calculate direction from thrower to target
+            Vec3d throwerPos = new Vec3d(thrower.getX(), thrower.getEyeY(), thrower.getZ());
+            Vec3d direction = targetPos.subtract(throwerPos).normalize();
+
+            // Calculate yaw and pitch based on target direction
+            double horizontalDistance = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+            baseYaw = (float) Math.toDegrees(Math.atan2(-direction.x, direction.z));
+            basePitch = (float) Math.toDegrees(Math.atan2(-direction.y, horizontalDistance));
+        } else {
+            // Use entity's facing direction
+            baseYaw = thrower.getYaw();
+            basePitch = thrower.getPitch();
+        }
+
         double offsetY;
         if (thrower instanceof PlayerEntity player) {
             offsetY = 1.5;
@@ -108,22 +201,27 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
             Vec3d velocity = new Vec3d(bladeForwardX * speed, 0, bladeForwardZ * speed);
             blade.setStableVelocity(velocity);
 
+            // Set knockback strength for the blade
+            blade.setKnockbackStrength(4.0f);
+
             world.spawnEntity(blade);
         }
     }
 
-    @Override
-    protected ItemStack getDefaultItemStack() {
-        return new ItemStack(ModItems.GRONK_SWORD);
-    }
+    public void setKnockbackStrength(float strength) { this.knockbackStrength = strength; }
 
-    public boolean isGrounded() {
-        return inGround;
-    }
+    @Override
+    protected ItemStack getDefaultItemStack() { return new ItemStack(ModItems.GRONK_SWORD); }
+
+    public boolean isGrounded() { return inGround; }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity hitEntity = entityHitResult.getEntity();
+
+        if (!(hitEntity instanceof PlayerEntity player) && hitEntity.getClass() == this.getOwner().getClass()) {
+            return ;
+        }
 
         // Prevent hitting the same entity multiple times
         if (hitEntities.contains(hitEntity)) {
@@ -132,56 +230,47 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
 
         hitEntities.add(hitEntity);
 
-        if (hitEntity instanceof PlayerEntity player) {
-            player.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
-            hasHitPlayer = true;
-
-            // Play hit sound
-            this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    SoundEvents.ENTITY_PLAYER_HURT, SoundCategory.PLAYERS,
-                    0.8f, 1.0f);
-
-            if (!this.getWorld().isClient) {
-                this.discard();
-            }
-
-        } else if (hitEntity instanceof LivingEntity livingEntity) {
+        if (hitEntity instanceof LivingEntity livingEntity) {
             livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
 
-            // Add knockback effect
-            Vec3d knockback = this.getVelocity().normalize().multiply(0.3);
-            livingEntity.addVelocity(knockback.x, 0.2, knockback.z);
-            livingEntity.velocityModified = true;
+            applyKnockback(hitEntity, hitEntity);
 
-            if (!this.getWorld().isClient) {
-                ((ServerWorld) this.getWorld()).spawnParticles(
-                        ParticleTypes.CRIT,
-                        hitEntity.getX(), hitEntity.getY() + hitEntity.getHeight() / 2, hitEntity.getZ(),
-                        5, 0.1, 0.1, 0.1, 0.1
-                );
-            }
+        }
 
-            // Play hit sound
-            this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    SoundEvents.ENTITY_ARROW_HIT, SoundCategory.NEUTRAL,
-                    1.0f, 1.0f);
+        if (!this.getWorld().isClient) {
+            this.discard();
+        }
+
+    }
+
+    private void applyKnockback(Entity hitEntity, Entity entity) {
+
+        // Calculate knockback direction
+        Vec3d knockbackDirection = this.getPos().subtract(hitEntity.getPos()).normalize();
+
+        double knockbackX = -knockbackDirection.x * knockbackStrength;
+        double knockbackZ = -knockbackDirection.z * knockbackStrength;
+        double knockbackY = 0.8;
+
+        Vec3d currentVelocity = entity.getVelocity();
+        entity.setVelocity(
+                currentVelocity.x + knockbackX,
+                currentVelocity.y + knockbackY,
+                currentVelocity.z + knockbackZ
+        );
+
+        // Sync velocity to client if it's a player
+        if (entity instanceof ServerPlayerEntity serverPlayer) {
+            serverPlayer.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayer));
+        }
+
+        if (!this.getWorld().isClient) {
+            ((ServerWorld) this.getWorld()).spawnParticles(
+                    ParticleTypes.CRIT,
+                    hitEntity.getX(), hitEntity.getY() + hitEntity.getHeight() / 2, hitEntity.getZ(),
+                    5, 0.1, 0.1, 0.1, 0.1
+            );
         }
     }
 
-    @Override
-    protected ItemStack asItemStack() {
-        return new ItemStack(ModItems.GRONK_SWORD);
-    }
-
-    @Override
-    protected void onBlockHit(BlockHitResult result) {
-        super.onBlockHit(result);
-        this.noClip = true;
-
-//        // Play block hit sound
-//        this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-//                SoundEvents.ENTITY_ARROW_HIT, SoundCategory.BLOCKS,
-//                1.0f, 0.8f);
-//        this.discard();
-    }
 }

@@ -1,0 +1,20 @@
+{
+  "gronk_charge": {
+    "subtitle": "sounds.muckbossesmod.gronk_charge",
+    "sounds": [
+      "muckbossesmod:gronk_charge"
+    ]
+  },
+  "blade_move": {
+    "subtitle": "sounds.muckbossesmod.blade_move",
+    "sounds": [
+      "muckbossesmod:blade_move"
+    ]
+  },
+  "sword_spinning": {
+    "subtitle": "sounds.muckbossesmod.sword_spinning",
+    "sounds": [
+      "muckbossesmod:sword_spinning"
+    ]
+  }
+}

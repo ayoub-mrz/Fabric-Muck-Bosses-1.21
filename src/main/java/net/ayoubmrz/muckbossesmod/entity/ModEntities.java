@@ -65,7 +65,7 @@ public class ModEntities {
     public static final EntityType<GronkBladeProjectileEntity> GRONK_BLADE = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "gronk_blade"),
             EntityType.Builder.<GronkBladeProjectileEntity>create(GronkBladeProjectileEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.4f, 1.5f).build());
+                    .dimensions(0.8f, 1.5f).build());
 
     public static final EntityType<GuardianLazerProjectileEntity> GUARDIAN_LAZER = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "guardian_lazer"),

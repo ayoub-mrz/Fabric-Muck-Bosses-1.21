@@ -6,6 +6,7 @@ import net.ayoubmrz.muckbossesmod.entity.custom.bosses.*;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.*;
 import net.ayoubmrz.muckbossesmod.item.ModItemGroups;
 import net.ayoubmrz.muckbossesmod.item.ModItems;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -25,6 +26,8 @@ public class MuckBossesMod implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 
 		GronkBladeCommand.register();
+
+		ModSounds.registerSounds();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.GRONK, GronkEntity.setAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.WHITE_GUARDIAN, WhiteGuardianEntity.setAttributes());

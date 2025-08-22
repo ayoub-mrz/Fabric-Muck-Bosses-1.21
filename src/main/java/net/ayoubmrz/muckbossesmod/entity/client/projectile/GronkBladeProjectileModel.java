@@ -19,7 +19,7 @@ public class GronkBladeProjectileModel extends EntityModel<GronkBladeProjectileE
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData gronk_sword = modelPartData.addChild("gronk_blade", ModelPartBuilder.create(), ModelTransform.of(0.0F, 14.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
+        ModelPartData gronk_sword = modelPartData.addChild("gronk_blade", ModelPartBuilder.create(), ModelTransform.of(0.0F, 12.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
 
         ModelPartData blade = gronk_sword.addChild("blade", ModelPartBuilder.create().uv(0, 2).cuboid(-9.75F, 0.25F, -0.25F, 22.0F, 1.0F, 0.25F, new Dilation(0.0F))
                 .uv(0, 5).cuboid(2.25F, 1.25F, -0.25F, 9.0F, 1.0F, 0.25F, new Dilation(0.0F))

@@ -3,6 +3,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkBladeProjectileEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkSwordProjectileEntity;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -12,10 +13,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -116,8 +118,7 @@ public class GronkMeleeAttackGoal extends Goal {
         ++this.timeWithoutAttack;
 
         // Start Shooting if Entity didn't attack after certain time
-//        if (++this.timeWithoutAttack >= 200) {
-        if (++this.timeWithoutAttack >= 20) {
+        if (++this.timeWithoutAttack >= 200) {
             this.hasShooted = false;
             this.hasAttacked = true;
             if (this.timeAfterHits < 55) {
@@ -130,21 +131,17 @@ public class GronkMeleeAttackGoal extends Goal {
         }
 
         if (this.isPerformingParticleAttack) {
-            // Handle delay phase
             if (this.particleDelayTimer > 0) {
                 this.particleDelayTimer--;
                 return;
             }
 
-            // Delay is over, start spawning particles
             this.particleAttackTimer--;
 
-            // Spawn particles every few ticks during the attack duration
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                spawnDamagingParticles();
+                spawnDamagingParticles(12);
             }
 
-            // End the particle attack when timer reaches 0
             if (this.particleAttackTimer <= 0) {
                 this.isPerformingParticleAttack = false;
             }
@@ -178,56 +175,82 @@ public class GronkMeleeAttackGoal extends Goal {
                 this.timeAfterHits = 0;
 
             } else if (!hasShooted && this.timeAfterHits >= 60) {
-                if (this.lastShoot == null || this.lastShoot == "shoot2") {
-                    System.out.println("shoot2");
-                    // trigger animation
-                    if (!animationTriggered) {
-                        this.mob.setShootingBlades(true);
-                        this.waitForAnimation = 0;
-                        this.animationTriggered = true;
-                    }
-                    this.waitForAnimation++;
-                    if (this.waitForAnimation == 35) {
-                        spawnBlades();
-                        GronkBladeProjectileEntity.spawnBladeSpread(this.mob.getWorld(), this.mob);
-                        this.waitForAnimation = 0;
-                        this.animationTriggered = false;
-                        this.shootCooldown = 0;
-                        this.hasShooted = true;
-                        this.hasAttacked = false;
-                        this.timeWithoutAttack = 0;
-//                        this.lastShoot = "shoot1";
-                    }
+                this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+                if (this.lastShoot == null || this.lastShoot.equals("blades")) {
+                    swordThrowAttack();
                 } else {
-                    System.out.println("shoot1");
-                    // trigger animation
-                    if (!animationTriggered) {
-                        this.mob.setShooting(true);
-                        this.waitForAnimation = 0;
-                        this.animationTriggered = true;
-                    }
-                    this.waitForAnimation++;
-                    if (this.waitForAnimation == 20) {
-                        this.shootSword();
-                        this.shootCooldown = 0;
-                    }
-
-                    if (this.waitForAnimation == 30) {
-                        this.shootSword();
-                        this.waitForAnimation = 0;
-                        this.animationTriggered = false;
-                        this.hasShooted = true;
-                        this.hasAttacked = false;
-                        this.timeWithoutAttack = 0;
-                        this.lastShoot = "shoot2";
-                    }
+                    bladesAttack();
                 }
             }
 
         }
     }
 
-    public void spawnDamagingParticles() {
+    public void swordThrowAttack() {
+        if (!animationTriggered) {
+            this.mob.setShootingSword(true);
+            this.waitForAnimation = 0;
+            this.animationTriggered = true;
+        }
+        this.waitForAnimation++;
+        if (this.waitForAnimation == 25) {
+            this.mob.setGronkStats("one_sword");
+            this.shootSword();
+            this.shootCooldown = 0;
+        }
+
+        if (this.waitForAnimation == 35) {
+            this.mob.setGronkStats("no_sword");
+            this.shootSword();
+        }
+        System.out.println(waitForAnimation);
+        if (this.waitForAnimation == 45) {
+            System.out.println("set to two");
+            this.mob.setGronkStats("two_swords");
+            this.waitForAnimation = 0;
+            this.animationTriggered = false;
+            this.hasAttacked = false;
+            this.lastShoot = "swords";
+            this.hasShooted = true;
+            this.timeWithoutAttack = 0;
+        }
+    }
+
+    public void bladesAttack() {
+        if (!animationTriggered) {
+            this.mob.setShootingBlades(true);
+            this.waitForAnimation = 0;
+            this.animationTriggered = true;
+        }
+        this.waitForAnimation++;
+        if (this.waitForAnimation == 10) {
+            this.mob.getWorld().playSound(
+                    null,
+                    this.mob.getX(),
+                    this.mob.getY(),
+                    this.mob.getZ(),
+                    ModSounds.GRONK_CHARGE,
+                    SoundCategory.HOSTILE,
+                    1.0f,
+                    0.8f
+            );
+        }
+        LivingEntity livingEntity = this.mob.getTarget();
+        this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+        if (this.waitForAnimation == 40) {
+            GronkBladeProjectileEntity.spawnBladeSpread(this.mob.getWorld(), this.mob, this.mob.getTarget().getPos());
+            spawnDamagingParticles(1);
+            this.waitForAnimation = 0;
+            this.animationTriggered = false;
+            this.shootCooldown = 0;
+            this.hasShooted = true;
+            this.hasAttacked = false;
+            this.timeWithoutAttack = 0;
+            this.lastShoot = "blades";
+        }
+    }
+
+    public void spawnDamagingParticles(int particleCount) {
         if (this.mob.getWorld().isClient) {
             return;
         }
@@ -242,7 +265,6 @@ public class GronkMeleeAttackGoal extends Goal {
         BlockPos groundPos = findGroundLevel(world, impactPoint);
         Vec3d groundImpactPos = new Vec3d(groundPos.getX() + 0.5, groundPos.getY() + 1.0, groundPos.getZ() + 0.5);
 
-        int particleCount = 12;
         double maxRange = 4.0;
         float damage = 20.0f;
 
@@ -259,13 +281,26 @@ public class GronkMeleeAttackGoal extends Goal {
 
         // Spawn particles in all horizontal directions from the impact point
         for (int i = 0; i < particleCount; i++) {
-            double angle = (2 * Math.PI * i) / particleCount; // Evenly distribute around 360 degrees
 
-            // Create horizontal direction vector
+            double angle = (2 * Math.PI * i) / particleCount;
+
             Vec3d particleDirection = new Vec3d(Math.cos(angle), 0, Math.sin(angle));
 
-            // Trace the particle path and check for entities
             traceParticlePath(world, groundImpactPos, particleDirection, maxRange, damage);
+
+            if (i % 2 == 0) {
+                this.mob.getWorld().playSound(
+                        null,
+                        this.mob.getX(),
+                        this.mob.getY(),
+                        this.mob.getZ(),
+                        SoundEvents.ENTITY_GENERIC_EXPLODE,
+                        SoundCategory.HOSTILE,
+                        0.6f,
+                        0.1f
+                );
+            }
+
         }
     }
 
@@ -284,7 +319,7 @@ public class GronkMeleeAttackGoal extends Goal {
         return startPos;
     }
 
-    private void traceParticlePath(World world, Vec3d startPos, Vec3d direction, double maxRange, float damage) {
+    public void traceParticlePath(World world, Vec3d startPos, Vec3d direction, double maxRange, float damage) {
         double stepSize = 0.3;
         int steps = (int)(maxRange / stepSize);
 
@@ -409,73 +444,6 @@ public class GronkMeleeAttackGoal extends Goal {
         }
     }
 
-//    protected void shootBlades() {
-//        World world = this.mob.getWorld();
-//        if (world.isClient()) return;
-//
-//        // Get the entity's position and facing direction
-//        Vec3d sourcePos = this.mob.getPos();
-//        Vec3d lookDirection = this.mob.getRotationVec(1.0f);
-//        float yaw = this.mob.getYaw();
-//
-//        // Distance in front of the entity to spawn blades
-//        double spawnDistance = 2.0;
-//
-//        // Calculate base spawn position (in front of entity)
-//        Vec3d baseSpawnPos = sourcePos.add(
-//                lookDirection.x * spawnDistance,
-//                sourcePos.y + this.mob.getHeight() * 0.5, // Middle height of entity
-//                lookDirection.z * spawnDistance
-//        );
-//
-//        // Define the 5 blade configurations: [yaw offset, side offset]
-//        double[][] bladeConfigs = {
-//                {0.0, 0.0},      // Center blade
-//                {-15.0, -0.8},   // Left near blade
-//                {15.0, 0.8},     // Right near blade
-//                {-35.0, -1.8},   // Left far blade
-//                {35.0, 1.8}      // Right far blade
-//        };
-//
-//        for (double[] config : bladeConfigs) {
-//            double yawOffset = config[0];
-//            double sideOffset = config[1];
-//
-//            // Calculate the right vector (perpendicular to look direction)
-//            Vec3d rightVector = new Vec3d(-lookDirection.z, 0, lookDirection.x).normalize();
-//
-//            // Calculate spawn position with side offset
-//            Vec3d spawnPos = baseSpawnPos.add(rightVector.multiply(sideOffset));
-//
-//            // Create blade entity (replace with your actual blade entity class)
-//            GronkBladeProjectileEntity blade = new GronkBladeProjectileEntity(this.mob.getWorld(), this.mob);
-//            blade.setPosition(spawnPos.x, spawnPos.y, spawnPos.z);
-//
-//            // Set blade rotation (facing direction + yaw offset)
-//            float bladeYaw = yaw + (float) yawOffset;
-//            blade.setYaw(bladeYaw);
-//            blade.setPitch(0); // Keep pitch level
-//
-//            // Calculate velocity direction based on the blade's yaw
-//            double radians = Math.toRadians(bladeYaw);
-//            double speed = 1.5; // Adjust speed as needed
-//
-//            Vec3d velocity = new Vec3d(
-//                    -Math.sin(radians) * speed,
-//                    0.0, // No vertical movement
-//                    Math.cos(radians) * speed
-//            );
-//
-//            blade.setVelocity(velocity);
-//
-//            world.spawnEntity(blade);
-//        }
-//    }
-
-    public void spawnBlades() {
-
-    }
-
     protected void attack(LivingEntity target) {
         if (this.canAttack(target)) {
             this.resetCooldown();
@@ -491,13 +459,9 @@ public class GronkMeleeAttackGoal extends Goal {
         }
     }
 
-    protected void resetCooldown() {
-        this.cooldown = this.getTickCount(20);
-    }
+    protected void resetCooldown() { this.cooldown = this.getTickCount(20); }
 
-    protected boolean isCooledDown() {
-        return this.cooldown <= 0;
-    }
+    protected boolean isCooledDown() { return this.cooldown <= 0; }
 
     protected boolean canAttack(LivingEntity target) {
         return this.isCooledDown() && this.mob.isInAttackRange(target) && this.mob.getVisibilityCache().canSee(target);

@@ -20,7 +20,7 @@ public class GronkBladeCommand {
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         dispatcher.register(CommandManager.literal("ThrowGronkBlade")
-                .requires(source -> source.hasPermissionLevel(2)) // Requires OP level 2
+                .requires(source -> source.hasPermissionLevel(2))
                 .executes(GronkBladeCommand::executeGronkBlade));
     }
 

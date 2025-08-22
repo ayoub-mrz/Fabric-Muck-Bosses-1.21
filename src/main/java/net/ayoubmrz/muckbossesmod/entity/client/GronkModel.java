@@ -14,11 +14,22 @@ public class GronkModel<T extends GronkEntity> extends GeoModel<GronkEntity> {
 
     @Override
     public Identifier getModelResource(GronkEntity gronkEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "geo/gronk.geo.json");
+        String gronkJson = "geo/gronk.geo.json";
+
+        if (gronkEntity.getGronkStats().equals("one_sword")) {
+            gronkJson = "geo/gronk_with_one_sword.geo.json";
+        } else if (gronkEntity.getGronkStats().equals("no_sword")) {
+            gronkJson = "geo/gronk_with_no_sword.geo.json";
+        } else if (gronkEntity.getGronkStats().equals("two_swords")) {
+            gronkJson = "geo/gronk.geo.json";
+        }
+
+        return Identifier.of(MuckBossesMod.MOD_ID, gronkJson);
     }
 
     @Override
     public Identifier getTextureResource(GronkEntity gronkEntity) {
+
         return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/gronk.png");
     }
 

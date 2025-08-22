@@ -3,6 +3,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.ayoubmrz.muckbossesmod.item.ModItems;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.client.util.math.Vector2f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -12,6 +13,8 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Direction;
@@ -25,6 +28,7 @@ public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
     public Vector2f groundedOffset;
     private final Set<Entity> hitEntities = new HashSet<>();
     private boolean hasHitPlayer = false;
+    private int currentTick = 0;
 
     public GronkSwordProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -54,6 +58,25 @@ public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
             rotation = 0;
         }
         return rotation;
+    }
+
+    @Override
+    public void tick() {
+        ++currentTick;
+        if (currentTick == 3) {
+            this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                    ModSounds.SWORD_SPINNING, SoundCategory.NEUTRAL, 1.8f, 1.0f);
+            currentTick = 0;
+        }
+        super.tick();
+    }
+
+    // Stop Sound on block hit
+    @Override
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        if(false) {
+            super.playSound(sound, volume, pitch);
+        }
     }
 
     @Override
