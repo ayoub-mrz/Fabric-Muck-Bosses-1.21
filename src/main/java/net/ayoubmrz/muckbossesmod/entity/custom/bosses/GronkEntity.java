@@ -1,6 +1,8 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GronkMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -13,7 +15,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -35,6 +39,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
+    private int stepSoundTicks = 0;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Gronk"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -72,6 +77,19 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
             }
         }
 
+        Vec3d velocity = this.getVelocity();
+        boolean isMoving = velocity.horizontalLength() > 0.01;
+
+        if (isMoving && this.isOnGround()) {
+            stepSoundTicks++;
+            if (stepSoundTicks >= 10) {
+                UsefulMethods.playStepSound(this);
+                stepSoundTicks = 0;
+            }
+        } else {
+            stepSoundTicks = 0;
+        }
+
     }
 
     public void startAttackWindup() {
@@ -100,7 +118,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
         super.initDataTracker(builder);
         builder.add(IS_SHOOTING_SWORD, false);
         builder.add(IS_SHOOTING_BLADES, false);
-        builder.add(GRONK_STATS, "two_swords");
+        builder.add(GRONK_STATS, "gronk");
     }
 
     public boolean isShootingSword() { return this.dataTracker.get(IS_SHOOTING_SWORD); }

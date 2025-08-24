@@ -2,6 +2,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GronkMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.item.ModItems;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.block.BlockState;
@@ -34,7 +35,6 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     private float damage = 20.0f;
     private Vec3d originalVelocity;
     private double targetSpeed = 0.8;
-    private float knockbackStrength = 1.0F;
 
     public GronkBladeProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -201,14 +201,9 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
             Vec3d velocity = new Vec3d(bladeForwardX * speed, 0, bladeForwardZ * speed);
             blade.setStableVelocity(velocity);
 
-            // Set knockback strength for the blade
-            blade.setKnockbackStrength(4.0f);
-
             world.spawnEntity(blade);
         }
     }
-
-    public void setKnockbackStrength(float strength) { this.knockbackStrength = strength; }
 
     @Override
     protected ItemStack getDefaultItemStack() { return new ItemStack(ModItems.GRONK_SWORD); }
@@ -233,7 +228,7 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
         if (hitEntity instanceof LivingEntity livingEntity) {
             livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
 
-            applyKnockback(hitEntity, hitEntity);
+            UsefulMethods.applyKnockback(hitEntity, this, 0.8f, 4.5f);
 
         }
 
@@ -241,36 +236,6 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
             this.discard();
         }
 
-    }
-
-    private void applyKnockback(Entity hitEntity, Entity entity) {
-
-        // Calculate knockback direction
-        Vec3d knockbackDirection = this.getPos().subtract(hitEntity.getPos()).normalize();
-
-        double knockbackX = -knockbackDirection.x * knockbackStrength;
-        double knockbackZ = -knockbackDirection.z * knockbackStrength;
-        double knockbackY = 0.8;
-
-        Vec3d currentVelocity = entity.getVelocity();
-        entity.setVelocity(
-                currentVelocity.x + knockbackX,
-                currentVelocity.y + knockbackY,
-                currentVelocity.z + knockbackZ
-        );
-
-        // Sync velocity to client if it's a player
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            serverPlayer.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayer));
-        }
-
-        if (!this.getWorld().isClient) {
-            ((ServerWorld) this.getWorld()).spawnParticles(
-                    ParticleTypes.CRIT,
-                    hitEntity.getX(), hitEntity.getY() + hitEntity.getHeight() / 2, hitEntity.getZ(),
-                    5, 0.1, 0.1, 0.1, 0.1
-            );
-        }
     }
 
 }

@@ -139,7 +139,7 @@ public class GronkMeleeAttackGoal extends Goal {
             this.particleAttackTimer--;
 
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                spawnDamagingParticles(12);
+                UsefulMethods.spawnDamagingParticles(12, this.mob);
             }
 
             if (this.particleAttackTimer <= 0) {
@@ -194,19 +194,17 @@ public class GronkMeleeAttackGoal extends Goal {
         }
         this.waitForAnimation++;
         if (this.waitForAnimation == 25) {
-            this.mob.setGronkStats("one_sword");
+            this.mob.setGronkStats("gronk_with_one_sword");
             this.shootSword();
             this.shootCooldown = 0;
         }
 
         if (this.waitForAnimation == 35) {
-            this.mob.setGronkStats("no_sword");
+            this.mob.setGronkStats("gronk_with_no_sword");
             this.shootSword();
         }
-        System.out.println(waitForAnimation);
         if (this.waitForAnimation == 45) {
-            System.out.println("set to two");
-            this.mob.setGronkStats("two_swords");
+            this.mob.setGronkStats("gronk");
             this.waitForAnimation = 0;
             this.animationTriggered = false;
             this.hasAttacked = false;
@@ -239,7 +237,7 @@ public class GronkMeleeAttackGoal extends Goal {
         this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
         if (this.waitForAnimation == 40) {
             GronkBladeProjectileEntity.spawnBladeSpread(this.mob.getWorld(), this.mob, this.mob.getTarget().getPos());
-            spawnDamagingParticles(1);
+            UsefulMethods.spawnDamagingParticles(1, this.mob);
             this.waitForAnimation = 0;
             this.animationTriggered = false;
             this.shootCooldown = 0;
@@ -248,159 +246,6 @@ public class GronkMeleeAttackGoal extends Goal {
             this.timeWithoutAttack = 0;
             this.lastShoot = "blades";
         }
-    }
-
-    public void spawnDamagingParticles(int particleCount) {
-        if (this.mob.getWorld().isClient) {
-            return;
-        }
-
-        World world = this.mob.getWorld();
-        Vec3d mobPos = this.mob.getPos();
-        Vec3d lookDirection = this.mob.getRotationVector().normalize();
-
-        double impactDistance = 1.0;
-        Vec3d impactPoint = mobPos.add(lookDirection.multiply(impactDistance));
-
-        BlockPos groundPos = findGroundLevel(world, impactPoint);
-        Vec3d groundImpactPos = new Vec3d(groundPos.getX() + 0.5, groundPos.getY() + 1.0, groundPos.getZ() + 0.5);
-
-        double maxRange = 4.0;
-        float damage = 20.0f;
-
-        // Create impact effect at ground zero
-        if (world instanceof ServerWorld serverWorld) {
-            serverWorld.spawnParticles(
-                    ParticleTypes.EXPLOSION,
-                    groundImpactPos.x, groundImpactPos.y, groundImpactPos.z,
-                    1,
-                    0.0, 0.0, 0.0,
-                    0.0
-            );
-        }
-
-        // Spawn particles in all horizontal directions from the impact point
-        for (int i = 0; i < particleCount; i++) {
-
-            double angle = (2 * Math.PI * i) / particleCount;
-
-            Vec3d particleDirection = new Vec3d(Math.cos(angle), 0, Math.sin(angle));
-
-            traceParticlePath(world, groundImpactPos, particleDirection, maxRange, damage);
-
-            if (i % 2 == 0) {
-                this.mob.getWorld().playSound(
-                        null,
-                        this.mob.getX(),
-                        this.mob.getY(),
-                        this.mob.getZ(),
-                        SoundEvents.ENTITY_GENERIC_EXPLODE,
-                        SoundCategory.HOSTILE,
-                        0.6f,
-                        0.1f
-                );
-            }
-
-        }
-    }
-
-    private BlockPos findGroundLevel(World world, Vec3d position) {
-        BlockPos startPos = BlockPos.ofFloored(position);
-
-        // Raycast down to find solid ground
-        for (int y = startPos.getY(); y >= world.getBottomY(); y--) {
-            BlockPos checkPos = new BlockPos(startPos.getX(), y, startPos.getZ());
-            if (!world.getBlockState(checkPos).isAir()) {
-                return checkPos; // Found solid ground
-            }
-        }
-
-        // If no ground found, use the original Y level
-        return startPos;
-    }
-
-    public void traceParticlePath(World world, Vec3d startPos, Vec3d direction, double maxRange, float damage) {
-        double stepSize = 0.3;
-        int steps = (int)(maxRange / stepSize);
-
-        Set<Entity> hitEntities = new HashSet<>();
-
-        for (int step = 1; step <= steps; step++) {
-            Vec3d currentPos = startPos.add(direction.multiply(step * stepSize));
-
-            // Spawn visual particles along the ground (you can change the particle type as needed)
-            if (world instanceof ServerWorld serverWorld) {
-                // Spawn particles slightly above ground level
-                Vec3d particlePos = new Vec3d(currentPos.x, startPos.y + 0.1, currentPos.z);
-
-                serverWorld.spawnParticles(
-                        ParticleTypes.DUST_PLUME,
-                        particlePos.x, particlePos.y, particlePos.z,
-                        2,
-                        0.2, 0.1, 0.2,
-                        0.05
-                );
-
-                // Add some flame particles for extra effect
-                serverWorld.spawnParticles(
-                        ParticleTypes.EXPLOSION,
-                        particlePos.x, particlePos.y + 0.2, particlePos.z,
-                        1,
-                        0.1, 0.1, 0.1,
-                        0.02
-                );
-            }
-
-            Box checkBox = new Box(
-                    currentPos.subtract(0.6, 0.0, 0.6),
-                    currentPos.add(0.6, 2.0, 0.6)
-            );
-            List<Entity> nearbyEntities = world.getOtherEntities(this.mob, checkBox);
-
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof LivingEntity livingEntity && !hitEntities.contains(entity)) {
-                    if (entity != this.mob && canDamageEntity(livingEntity)) {
-                        hitEntities.add(entity);
-
-                        // Deal damage
-                        DamageSource damageSource = this.mob.getDamageSources().mobAttack(this.mob);
-                        livingEntity.damage(damageSource, damage);
-
-                        // Visual effect on hit
-                        if (world instanceof ServerWorld serverWorld) {
-                            serverWorld.spawnParticles(
-                                    ParticleTypes.DAMAGE_INDICATOR,
-                                    entity.getX(), entity.getY() + entity.getHeight() * 0.5, entity.getZ(),
-                                    10,
-                                    0.3, 0.3, 0.3,
-                                    0.2
-                            );
-                        }
-                    }
-                }
-            }
-
-            double distanceFromOrigin = step * stepSize;
-            if (distanceFromOrigin > maxRange * 0.8) {
-                if (world.getRandom().nextFloat() > 0.5f) {
-                    continue;
-                }
-            }
-        }
-    }
-
-    private boolean canDamageEntity(LivingEntity target) {
-        if (target == this.mob) {
-            return false;
-        }
-        if (target.getClass() == this.mob.getClass()) {
-            return false;
-        }
-        if (target.isDead()) {
-            return false;
-        }
-
-        return true;
     }
 
     protected void shootSword() {

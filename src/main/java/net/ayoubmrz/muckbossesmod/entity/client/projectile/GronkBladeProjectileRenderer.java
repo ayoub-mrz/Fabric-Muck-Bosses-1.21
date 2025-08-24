@@ -34,7 +34,6 @@ public class GronkBladeProjectileRenderer extends EntityRenderer<GronkBladeProje
 
              matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entityYaw));
              matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entityPitch));
-
         }
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,

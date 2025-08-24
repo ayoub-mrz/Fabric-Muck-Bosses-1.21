@@ -10,6 +10,8 @@ public class ModSounds {
     public static final SoundEvent GRONK_CHARGE = registerSoundEvent("gronk_charge");
     public static final SoundEvent BLADE_MOVE = registerSoundEvent("blade_move");
     public static final SoundEvent SWORD_SPINNING = registerSoundEvent("sword_spinning");
+    public static final SoundEvent SPEAR_SWING = registerSoundEvent("spear_swing");
+    public static final SoundEvent HUGE_STEP = registerSoundEvent("huge_step");
 
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = Identifier.of(MuckBossesMod.MOD_ID, name);

@@ -14,7 +14,7 @@ public class ChiefModel<T extends ChiefEntity> extends GeoModel<ChiefEntity> {
 
     @Override
     public Identifier getModelResource(ChiefEntity chiefEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "geo/chief.geo.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "geo/" + chiefEntity.isChiefStats() + ".geo.json");
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ChiefModel<T extends ChiefEntity> extends GeoModel<ChiefEntity> {
 
     @Override
     public Identifier getAnimationResource(ChiefEntity chiefEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "animations/gronk.animation.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "animations/chief.animation.json");
     }
 
     @Override

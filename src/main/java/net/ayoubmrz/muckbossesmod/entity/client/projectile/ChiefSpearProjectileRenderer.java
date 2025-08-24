@@ -26,15 +26,8 @@ public class ChiefSpearProjectileRenderer extends EntityRenderer<ChiefSpearProje
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
-        if(entity.groundedOffset != null) {
-            if(!entity.isGrounded()) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-                matrices.translate(0, -1.0f, 0);
-            } else {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.groundedOffset.getY()));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.groundedOffset.getX()));
-                matrices.translate(0, -0.5f, 0);
-            }
+        if(!entity.isGrounded()) {
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
         }
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,

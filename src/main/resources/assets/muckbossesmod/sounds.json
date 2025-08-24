@@ -16,5 +16,17 @@
     "sounds": [
       "muckbossesmod:sword_spinning"
     ]
+  },
+  "spear_swing": {
+    "subtitle": "sounds.muckbossesmod.spear_swing",
+    "sounds": [
+      "muckbossesmod:spear_swing"
+    ]
+  },
+  "huge_step": {
+    "subtitle": "sounds.muckbossesmod.huge_step",
+    "sounds": [
+      "muckbossesmod:huge_step"
+    ]
   }
 }

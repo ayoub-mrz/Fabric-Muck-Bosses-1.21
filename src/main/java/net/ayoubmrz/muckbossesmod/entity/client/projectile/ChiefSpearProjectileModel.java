@@ -19,7 +19,7 @@ public class ChiefSpearProjectileModel extends EntityModel<ChiefSpearProjectileE
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData chief_spear = modelPartData.addChild("chief_spear", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 16.0F, 0.0F));
+        ModelPartData chief_spear = modelPartData.addChild("chief_spear", ModelPartBuilder.create(), ModelTransform.of(0.0F, 4.0F, -14.0F, -1.5708F, 0.0F, 1.0036F));
 
         ModelPartData spear_tip = chief_spear.addChild("spear_tip", ModelPartBuilder.create().uv(20, 0).cuboid(-1.5F, -10.0F, 0.5F, 3.0F, 4.0F, 1.0F, new Dilation(0.0F))
                 .uv(0, 0).cuboid(-2.5F, -21.0F, 0.5F, 5.0F, 11.0F, 1.0F, new Dilation(0.003F))

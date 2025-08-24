@@ -45,7 +45,7 @@ public class ModEntities {
     public static final EntityType<ChiefEntity> CHIEF = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "chief"),
             EntityType.Builder.create(ChiefEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(2.0f, 5.6f).build());
+                    .dimensions(1.8f, 4f).build());
 
     public static final EntityType<BigChunkEntity> BIG_CHUNK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "big_chunk"),
