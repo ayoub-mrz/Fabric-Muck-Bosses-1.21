@@ -1,8 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.ChiefMeleeAttackGoal;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.UsefulMethods;
-import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -19,11 +17,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -55,7 +49,6 @@ public class ChiefEntity extends HostileEntity implements GeoEntity {
 
     public ChiefEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.getSafeFallDistance();
     }
 
     @Override
@@ -151,12 +144,11 @@ public class ChiefEntity extends HostileEntity implements GeoEntity {
 
     public void setJumpAttack(boolean jumping) { this.dataTracker.set(IS_JUMP_ATTACK, jumping); }
 
-
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0F)
-                .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 4.0F)
+                .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.0F)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);
     }
 
@@ -175,6 +167,7 @@ public class ChiefEntity extends HostileEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "attackController", 3, this::attackPredicate));
         controllers.add(new AnimationController<>(this, "shootController", 3, this::shootPredicate));
         controllers.add(new AnimationController<>(this, "spinAttackController", 0, this::spinAttackPredicate));
+        controllers.add(new AnimationController<>(this, "jumpAttackController", 0, this::jumpAttackPredicate));
     }
 
     private PlayState shootPredicate(AnimationState<ChiefEntity> event) {
@@ -185,6 +178,19 @@ public class ChiefEntity extends HostileEntity implements GeoEntity {
                     RawAnimation.begin().then("animation.chief.spear_throw", Animation.LoopType.PLAY_ONCE)
             );
             setShootingSpear(false);
+            return PlayState.CONTINUE;
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+    private PlayState jumpAttackPredicate(AnimationState<ChiefEntity> event) {
+
+        if (this.isJumpAttack()) {
+            event.getController().forceAnimationReset();
+            event.getController().setAnimation(
+                    RawAnimation.begin().then("animation.chief.jump_attack", Animation.LoopType.PLAY_ONCE)
+            );
             return PlayState.CONTINUE;
         }
 

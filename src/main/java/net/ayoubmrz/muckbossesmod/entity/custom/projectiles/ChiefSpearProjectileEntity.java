@@ -2,15 +2,16 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.UsefulMethods;
-import net.ayoubmrz.muckbossesmod.item.ModItems;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -33,9 +34,26 @@ public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    protected ItemStack getDefaultItemStack() { return new ItemStack(ModItems.CHIEF_SPEAR); }
+    public void tick() {
+        super.tick();
+
+        if (this.age > 200 && this.getWorld().isClient) {
+            this.discard();
+        }
+        ++this.age;
+    }
+
+    @Override
+protected ItemStack getDefaultItemStack() { return new ItemStack(Items.STICK); }
 
     public boolean isGrounded() { return inGround; }
+
+    @Override
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        if(false) {
+            super.playSound(sound, volume, pitch);
+        }
+    }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
@@ -55,7 +73,7 @@ public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
             hasHitPlayer = true;
 
             this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.NEUTRAL, 0.4f, 0.4f);
+                    SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.NEUTRAL, 0.2f, 0.2f);
 
             UsefulMethods.applyKnockback(hitEntity, this, 0.4f, 4.0f);
 
@@ -67,14 +85,11 @@ public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    protected ItemStack asItemStack() { return new ItemStack(ModItems.CHIEF_SPEAR); }
-
-    @Override
     protected void onBlockHit(BlockHitResult result) {
         super.onBlockHit(result);
 
         this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.NEUTRAL, 0.4f, 0.4f);
+                SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.NEUTRAL, 0.2f, 0.2f);
 
         if (!this.getWorld().isClient) {
             this.discard();

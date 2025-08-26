@@ -12,6 +12,12 @@ public class ModSounds {
     public static final SoundEvent SWORD_SPINNING = registerSoundEvent("sword_spinning");
     public static final SoundEvent SPEAR_SWING = registerSoundEvent("spear_swing");
     public static final SoundEvent HUGE_STEP = registerSoundEvent("huge_step");
+    public static final SoundEvent GUARDIAN_AMBIENT = registerSoundEvent("guardian_ambient");
+    public static final SoundEvent GUARDIAN_AMBIENT_1 = registerSoundEvent("guardian_ambient_1");
+    public static final SoundEvent GUARDIAN_AMBIENT_2 = registerSoundEvent("guardian_ambient_2");
+    public static final SoundEvent GUARDIAN_AMBIENT_3 = registerSoundEvent("guardian_ambient_3");
+    public static final SoundEvent GUARDIAN_AMBIENT_4 = registerSoundEvent("guardian_ambient_4");
+    public static final SoundEvent LASER_CHARGE_UP = registerSoundEvent("laser_charge_up");
 
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = Identifier.of(MuckBossesMod.MOD_ID, name);

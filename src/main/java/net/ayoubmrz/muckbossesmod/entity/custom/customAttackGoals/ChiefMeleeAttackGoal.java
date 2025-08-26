@@ -1,28 +1,22 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.ChiefSpearProjectileEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkBladeProjectileEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkSwordProjectileEntity;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 import java.util.*;
 
@@ -126,9 +120,10 @@ public class ChiefMeleeAttackGoal extends Goal {
         ++this.timeWithoutAttack;
 
 //      Start Shooting if Entity didn't attack after certain time
-        if (++this.timeWithoutAttack >= 150) {
+        if (++this.timeWithoutAttack >= 500) {
             this.hasShooted = false;
             this.hasAttacked = true;
+            this.lastShoot = "jump";
             if (this.timeAfterHits < 55) {
                 this.timeAfterHits = 55;
             }
@@ -164,7 +159,7 @@ public class ChiefMeleeAttackGoal extends Goal {
         LivingEntity livingEntity = this.mob.getTarget();
 
         if (livingEntity != null) {
-            this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F);
+            if (!isJumpAttacking) { this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F); }
             if (!this.hasAttacked) {
 
                 this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
@@ -181,77 +176,173 @@ public class ChiefMeleeAttackGoal extends Goal {
                     this.updateCountdownTicks = this.getTickCount(this.updateCountdownTicks);
                 }
                 this.cooldown = Math.max(this.cooldown - 1, 0);
-                this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F);
+                if (!isJumpAttacking) { this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F); }
                 this.attack(this.mob.getTarget());
                 this.hasShooted = false;
                 this.timeAfterHits = 0;
             } else if (!hasShooted && this.timeAfterHits >= 60) {
-                this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F);
+                if (!isJumpAttacking) { this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F); }
                 if (this.lastShoot == null || this.lastShoot.equals("jump")) {
-                    jumpAttack();
+                    this.throwSpearAttack();
                 } else if (this.lastShoot.equals("spear_throw")) {
-                    spearSpinAttack();
+                    this.spearSpinAttack();
                 } else if (this.lastShoot.equals("spin")) {
-                    jumpAttack();
+                    this.jumpAttack();
                 }
             }
 
         }
     }
 
-    public void jumpAttack() {
+    private void jumpAttack() {
         LivingEntity target = this.mob.getTarget();
 
-        if (target == null || isJumpAttacking) {
+        if (target == null) {
+            this.hasAttacked = false;
+            this.hasShooted = true;
+            this.timeWithoutAttack = 0;
+            this.timeAfterHits = 0;
             return;
         }
 
-        // Start jump attack
-        isJumpAttacking = true;
-        jumpAttackPhase = 1; // ascending phase
+        double distance = this.mob.distanceTo(target);
+        if (distance > 10.0f) {
+            this.mob.getNavigation().startMovingTo(target, this.speed);
+            return;
+        }
 
-        // Store target position for landing
-        jumpTargetPos = new Vec3d(target.getX(), target.getY(), target.getZ());
+        if (!animationTriggered && !isJumpAttacking) {
+            isJumpAttacking = true;
+            jumpAttackPhase = 1;
+            this.waitForAnimation = 0;
+            this.animationTriggered = true;
 
-        // Calculate jump velocity
+            this.mob.setJumpAttack(true);
+
+            jumpTargetPos = new Vec3d(target.getX(), target.getY(), target.getZ());
+
+            this.mob.setVelocity(0, 1.2, 0);
+            this.mob.velocityModified = true;
+
+            this.mob.getWorld().playSound(null, this.mob.getX(), this.mob.getY(), this.mob.getZ(),
+                    ModSounds.SPEAR_SWING, SoundCategory.HOSTILE, 1.0f, 0.5f);
+        }
+
+        if (isJumpAttacking) {
+            this.waitForAnimation++;
+
+            if (this.waitForAnimation == 3) {
+                this.mob.setJumpAttack(false);
+            }
+        }
+    }
+
+    private void handleJumpAttack() {
+        if (!isJumpAttacking || jumpTargetPos == null) return;
+
         double deltaX = jumpTargetPos.x - this.mob.getX();
         double deltaZ = jumpTargetPos.z - this.mob.getZ();
         double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
-        // Horizontal velocity to reach target
-        double jumpTime = 1.5; // Time in seconds to reach target
-        double velocityX = deltaX / jumpTime / 20; // Convert to ticks (20 ticks per second)
-        double velocityZ = deltaZ / jumpTime / 20;
+        if (horizontalDistance > 0.1) {
+            double directionX = deltaX / horizontalDistance;
+            double directionZ = deltaZ / horizontalDistance;
 
-        // Vertical velocity for 4 blocks high jump
-        double velocityY = 1.2; // Adjust this value to control jump height
+            double lookDistance = 100.0;
+            double lookX = this.mob.getX() + (directionX * lookDistance);
+            double lookZ = this.mob.getZ() + (directionZ * lookDistance);
+            double lookY = this.mob.getY();
 
-        // Apply the jump velocity
-        this.mob.setVelocity(velocityX, velocityY, velocityZ);
-        this.mob.velocityModified = true;
-
-        // Play jump sound
-        this.mob.getWorld().playSound(null, this.mob.getX(), this.mob.getY(), this.mob.getZ(),
-                ModSounds.SPEAR_SWING, SoundCategory.HOSTILE, 1.0f, 0.5f);
-    }
-
-    // Add this to your existing tick() method in ChiefEntity (add it where your other tick logic is)
-    private void handleJumpAttack() {
-        if (!isJumpAttacking) return;
+            this.mob.getLookControl().lookAt(lookX, lookY, lookZ, 10.0F, 10.0F);
+        }
 
         if (jumpAttackPhase == 1) { // Ascending
+            double targetDeltaX = jumpTargetPos.x - this.mob.getX();
+            double targetDeltaZ = jumpTargetPos.z - this.mob.getZ();
+            double targetHorizontalDistance = Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaZ * targetDeltaZ);
+
+            if (targetHorizontalDistance > 0.5) {
+                Vec3d currentVelocity = this.mob.getVelocity();
+
+                double maxHorizontalSpeed = 0.15;
+                double normalizedX = targetDeltaX / targetHorizontalDistance;
+                double normalizedZ = targetDeltaZ / targetHorizontalDistance;
+
+                double targetVelX = normalizedX * Math.min(maxHorizontalSpeed, targetHorizontalDistance * 0.3);
+                double targetVelZ = normalizedZ * Math.min(maxHorizontalSpeed, targetHorizontalDistance * 0.3);
+
+                this.mob.setVelocity(targetVelX, currentVelocity.y, targetVelZ);
+                this.mob.velocityModified = true;
+            } else {
+                Vec3d currentVelocity = this.mob.getVelocity();
+                this.mob.setVelocity(0, currentVelocity.y, 0);
+                this.mob.velocityModified = true;
+            }
+
             if (this.mob.getVelocity().y <= 0) {
-                jumpAttackPhase = 2; // Start descending
+                jumpAttackPhase = 2;
             }
         } else if (jumpAttackPhase == 2) { // Descending
-            if (this.mob.isOnGround()) {
-                jumpAttackPhase = 3; // Landing
+
+            double targetDeltaX = jumpTargetPos.x - this.mob.getX();
+            double targetDeltaZ = jumpTargetPos.z - this.mob.getZ();
+            double targetHorizontalDistance = Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaZ * targetDeltaZ);
+
+            if (targetHorizontalDistance > 0.5) {
+                Vec3d currentVelocity = this.mob.getVelocity();
+
+                double maxHorizontalSpeed = 0.2;
+                double normalizedX = targetDeltaX / targetHorizontalDistance;
+                double normalizedZ = targetDeltaZ / targetHorizontalDistance;
+
+                double targetVelX = normalizedX * Math.min(maxHorizontalSpeed, targetHorizontalDistance * 0.4);
+                double targetVelZ = normalizedZ * Math.min(maxHorizontalSpeed, targetHorizontalDistance * 0.4);
+
+                this.mob.setVelocity(targetVelX, currentVelocity.y, targetVelZ);
+                this.mob.velocityModified = true;
+            } else {
+                Vec3d currentVelocity = this.mob.getVelocity();
+                this.mob.setVelocity(0, currentVelocity.y, 0);
+                this.mob.velocityModified = true;
+            }
+
+            if (this.mob.isOnGround() || this.mob.getY() <= jumpTargetPos.y + 1) {
+                jumpAttackPhase = 3;
+                this.mob.setPosition(jumpTargetPos.x, jumpTargetPos.y, jumpTargetPos.z);
                 performLandingAttack();
             }
-        } else if (jumpAttackPhase == 3) { // Landing complete
-            isJumpAttacking = false;
-            jumpAttackPhase = 0;
-            jumpTargetPos = null;
+        } else if (jumpAttackPhase == 3) { // Landing
+            if (horizontalDistance > 0.1) {
+                double directionX = deltaX / horizontalDistance;
+                double directionZ = deltaZ / horizontalDistance;
+
+                double lookDistance = 100.0;
+                double lookX = this.mob.getX() + (directionX * lookDistance);
+                double lookZ = this.mob.getZ() + (directionZ * lookDistance);
+                double lookY = this.mob.getY();
+
+                this.mob.getLookControl().lookAt(lookX, lookY, lookZ, 10.0F, 10.0F);
+            }
+
+            this.mob.setVelocity(0, 0, 0);
+            this.mob.velocityModified = true;
+
+            this.mob.getNavigation().stop();
+
+            this.waitForAnimation++;
+
+            if (this.waitForAnimation >= 30) {
+                this.isJumpAttacking = false;
+                this.jumpAttackPhase = 0;
+                this.jumpTargetPos = null;
+                this.animationTriggered = false;
+                this.hasAttacked = false;
+                this.lastShoot = "jump";
+                this.hasShooted = true;
+                this.timeWithoutAttack = 0;
+                this.timeAfterHits = 0;
+                this.waitForAnimation = 0;
+            }
         }
     }
 
@@ -346,6 +437,8 @@ public class ChiefMeleeAttackGoal extends Goal {
         }
         this.waitForAnimation++;
         if (this.waitForAnimation == 27) {
+            LivingEntity livingEntity = this.mob.getTarget();
+            this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F);
             this.shootSpear();
             this.mob.setChiefStats("chief_without_spear");
         }
@@ -365,20 +458,16 @@ public class ChiefMeleeAttackGoal extends Goal {
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
 
-            // Calculate forward direction
             double forwardX = -Math.sin(Math.toRadians(this.mob.getYaw()));
             double forwardZ = Math.cos(Math.toRadians(this.mob.getYaw()));
 
-            // Calculate left direction (perpendicular to forward)
-            double leftX = forwardZ; // Left is opposite of right
+            double leftX = forwardZ;
             double leftZ = -forwardX;
 
-            // Position offsets for left shoulder
-            double forwardOffset = 0.5; // Slightly forward from center
-            double leftOffset = 1.2;    // To the left side
-            double upOffset = 0.6;       // Higher up for shoulder height
+            double forwardOffset = 0.5;
+            double leftOffset = 1.2;
+            double upOffset = 0.6;
 
-            // Calculate spawn position at left shoulder
             double spawnX = this.mob.getX() + (forwardX * forwardOffset) + (leftX * leftOffset);
             double spawnY = this.mob.getY() + this.mob.getHeight() * 0.8 + upOffset;
             double spawnZ = this.mob.getZ() + (forwardZ * forwardOffset) + (leftZ * leftOffset);
@@ -429,14 +518,6 @@ public class ChiefMeleeAttackGoal extends Goal {
                     ModSounds.SPEAR_SWING, SoundCategory.HOSTILE, 4.0f, 0.6f
             );
         }
-//        if (this.canAttack(target)) {
-//            this.resetCooldown();
-//            this.mob.swingHand(Hand.MAIN_HAND);
-//
-//            this.timeWithoutAttack = 0;
-//
-////            this.hasAttacked = true;
-//        }
     }
 
     protected void resetCooldown() { this.cooldown = this.getTickCount(20); }

@@ -28,5 +28,41 @@
     "sounds": [
       "muckbossesmod:huge_step"
     ]
+  },
+  "guardian_ambient": {
+    "subtitle": "sounds.muckbossesmod.guardian_ambient",
+    "sounds": [
+      "muckbossesmod:guardian_ambient"
+    ]
+  },
+  "guardian_ambient_1": {
+    "subtitle": "sounds.muckbossesmod.guardian_ambient_1",
+    "sounds": [
+      "muckbossesmod:guardian_ambient_1"
+    ]
+  },
+  "guardian_ambient_2": {
+    "subtitle": "sounds.muckbossesmod.guardian_ambient_2",
+    "sounds": [
+      "muckbossesmod:guardian_ambient_2"
+    ]
+  },
+  "guardian_ambient_3": {
+    "subtitle": "sounds.muckbossesmod.guardian_ambient_3",
+    "sounds": [
+      "muckbossesmod:guardian_ambient_3"
+    ]
+  },
+  "guardian_ambient_4": {
+    "subtitle": "sounds.muckbossesmod.guardian_ambient_4",
+    "sounds": [
+      "muckbossesmod:guardian_ambient_4"
+    ]
+  },
+  "laser_charge_up": {
+    "subtitle": "sounds.muckbossesmod.laser_charge_up",
+    "sounds": [
+      "muckbossesmod:laser_charge_up"
+    ]
   }
 }

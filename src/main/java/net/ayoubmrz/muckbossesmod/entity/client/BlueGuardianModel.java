@@ -19,12 +19,12 @@ public class BlueGuardianModel<T extends BlueGuardianEntity> extends GeoModel<Bl
 
     @Override
     public Identifier getTextureResource(BlueGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian2.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/blue_guardian.png");
     }
 
     @Override
     public Identifier getAnimationResource(BlueGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "animations/gronk.animation.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "animations/guardian.animation.json");
     }
 
     @Override

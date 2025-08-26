@@ -1,22 +1,16 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GronkMeleeAttackGoal;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.UsefulMethods;
-import net.ayoubmrz.muckbossesmod.item.ModItems;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
@@ -206,7 +200,7 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    protected ItemStack getDefaultItemStack() { return new ItemStack(ModItems.GRONK_SWORD); }
+    protected ItemStack getDefaultItemStack() { return new ItemStack(Items.STICK); }
 
     public boolean isGrounded() { return inGround; }
 

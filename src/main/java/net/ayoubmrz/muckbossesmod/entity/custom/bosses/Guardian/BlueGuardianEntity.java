@@ -1,5 +1,8 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GuardianMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -11,12 +14,16 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -29,11 +36,20 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
-    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> IS_SHOOTING_LAZER = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private static final TrackedData<Boolean> IS_SHOOTING_LIGHTNING = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private static final TrackedData<Boolean> IS_LASER_SOUND_START = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
+    private boolean isSecondAttackPending = false;
+    private boolean isSecondAttackWindingUp = false;
+    private int secondAttackWindupTicks = 0;
+    private boolean soundStart = false;
+    private int soundTicks = 0;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Blue Guardian"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -44,92 +60,190 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
 
     @Override
     public void tick() {
+        ++soundTicks;
         super.tick();
 
         if (isAttackWindingUp) {
             windupTicks--;
-
             if (windupTicks <= 0) {
-                performAttack();
+                performFirstAttack();
                 isAttackWindingUp = false;
+                isSecondAttackPending = true;
+                isSecondAttackWindingUp = true;
+                secondAttackWindupTicks = 16;
             }
         }
 
-        if (isShooting()) {
+        if (isSecondAttackWindingUp) {
+            secondAttackWindupTicks--;
+            if (secondAttackWindupTicks <= 0) {
+                performSecondAttack();
+                isSecondAttackWindingUp = false;
+                isSecondAttackPending = false;
+            }
+        }
+
+        if (isShootingLazer()) {
             shootingTicks++;
             if (shootingTicks > 5) {
-                setShooting(false);
+                setShootingLazer(false);
                 shootingTicks = 0;
             }
         }
+
+        if (isLazerSoundStart()) {
+            this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                    ModSounds.LASER_CHARGE_UP, SoundCategory.HOSTILE, 1.0f, 0.8f);
+            setLazerSoundStart(false);
+        }
+
+        if (this.isAlive()) {
+            if (!isLazerSoundStart() && soundStart && soundTicks == 25) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                    ModSounds.GUARDIAN_AMBIENT_2, SoundCategory.HOSTILE, 0.2f, 0.6f);
+            } else if (!isLazerSoundStart() && soundStart && soundTicks == 50) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                        ModSounds.GUARDIAN_AMBIENT_4, SoundCategory.HOSTILE, 0.2f, 0.6f);
+            } else if (!isLazerSoundStart() && soundStart && soundTicks == 75) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, 0.2f, 0.6f);
+            } else if (!isLazerSoundStart() && soundStart && soundTicks == 100) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                        ModSounds.GUARDIAN_AMBIENT_1, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                this.soundTicks = 0;
+            } else if (!soundStart) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
+                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                this.soundStart = true;
+            }
+        }
+
     }
 
     public void startAttackWindup() {
         this.isAttackWindingUp = true;
-        this.windupTicks = 10;
+        this.windupTicks = 20;
     }
 
-    private void performAttack() {
+    private void performFirstAttack() {
         LivingEntity target = this.getTarget();
         if (this.isAlive() && target != null && this.canSee(target)) {
-            this.tryAttack(target);
+            this.executeAttack(target);
         }
+    }
+
+    private void performSecondAttack() {
+        LivingEntity target = this.getTarget();
+        if (this.isAlive() && target != null && this.canSee(target)) {
+            this.executeAttack(target);
+        }
+    }
+
+    private void executeAttack(Entity target) {
+        if (target != null && this.distanceTo(target) <= 4.0f) {
+            boolean attackSuccessful = super.tryAttack(target);
+
+            if (attackSuccessful) {
+                UsefulMethods.applyKnockback(target, this, 0.2f, 1.4f);
+            }
+        }
+        this.getWorld().playSound(
+                null, this.getX(), this.getY(), this.getZ(),
+                SoundEvents.ENTITY_WARDEN_DEATH, SoundCategory.HOSTILE, 2.0f, 2.4f
+        );
     }
 
     @Override
     public boolean tryAttack(Entity target) {
-        if (!isAttackWindingUp) {
-            startAttackWindup();
+        if (isAttackWindingUp || isSecondAttackWindingUp || isSecondAttackPending) {
             return false;
         }
-        return super.tryAttack(target);
+
+        if (target != null && this.distanceTo(target) > 3.0f) {
+            return false;
+        }
+
+        startAttackWindup();
+        return false;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        if (damageSource.isOf(DamageTypes.IN_FIRE) ||
+                damageSource.isOf(DamageTypes.ON_FIRE) ||
+                damageSource.isOf(DamageTypes.LAVA) ||
+                damageSource.isOf(DamageTypes.HOT_FLOOR)) {
+            return true;
+        }
+        return super.isInvulnerableTo(damageSource);
     }
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(IS_SHOOTING, false);
+        builder.add(IS_SHOOTING_LAZER, false);
+        builder.add(IS_SHOOTING_LIGHTNING, false);
+        builder.add(IS_LASER_SOUND_START, false);
     }
 
-    public boolean isShooting() {
-        return this.dataTracker.get(IS_SHOOTING);
-    }
+    public boolean isShootingLazer() { return this.dataTracker.get(IS_SHOOTING_LAZER); }
 
-    public void setShooting(boolean shooting) {
-        this.dataTracker.set(IS_SHOOTING, shooting);
-    }
+    public void setShootingLazer(boolean shooting) { this.dataTracker.set(IS_SHOOTING_LAZER, shooting); }
+
+    public boolean isShootingLightning() { return this.dataTracker.get(IS_SHOOTING_LIGHTNING); }
+
+    public void setShootingLightning(boolean shooting) { this.dataTracker.set(IS_SHOOTING_LIGHTNING, shooting); }
+
+    public boolean isLazerSoundStart() { return this.dataTracker.get(IS_LASER_SOUND_START); }
+
+    public void setLazerSoundStart(boolean shooting) { this.dataTracker.set(IS_LASER_SOUND_START, shooting); }
 
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0F)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4F)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35.0F);
+                .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.0F)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.4f, 1));
+        this.goalSelector.add(1, new GuardianMeleeAttackGoal(this, 0.8f, true));
+        this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.6f, 1));
         this.goalSelector.add(4, new LookAroundGoal(this));
         this.goalSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-//        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
-        controllers.add(new AnimationController<>(this, "attackController", 0, this::attackPredicate));
-        controllers.add(new AnimationController<>(this, "shootController", 0, this::shootPredicate));
+        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate));
+        controllers.add(new AnimationController<>(this, "attackController", 5, this::attackPredicate));
+        controllers.add(new AnimationController<>(this, "shootLazerController", 5, this::shootLazerPredicate));
+        controllers.add(new AnimationController<>(this, "shootLightningController", 5, this::shootLightningPredicate));
     }
 
-    private PlayState shootPredicate(AnimationState<BlueGuardianEntity> event) {
+    private PlayState shootLightningPredicate(AnimationState<BlueGuardianEntity> event) {
 
-        if (this.isShooting()) {
+        if (this.isShootingLightning()) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
-                    RawAnimation.begin().then("animation.gronk.shoot", Animation.LoopType.PLAY_ONCE)
+                    RawAnimation.begin().then("animation.guardian.lightning", Animation.LoopType.PLAY_ONCE)
             );
-            setShooting(false);
+            return PlayState.CONTINUE;
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+    private PlayState shootLazerPredicate(AnimationState<BlueGuardianEntity> event) {
+
+        if (this.isShootingLazer()) {
+            event.getController().forceAnimationReset();
+            event.getController().setAnimation(
+                    RawAnimation.begin().then("animation.guardian.lazer", Animation.LoopType.PLAY_ONCE)
+            );
+            setShootingLazer(false);
             return PlayState.CONTINUE;
         }
 
@@ -140,7 +254,7 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
         if (this.handSwinging) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
-                    RawAnimation.begin().then("animation.gronk.attack", Animation.LoopType.PLAY_ONCE)
+                    RawAnimation.begin().then("animation.guardian.attack", Animation.LoopType.PLAY_ONCE)
             );
             this.handSwinging = false;
             return PlayState.CONTINUE;
@@ -152,12 +266,12 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
     private PlayState predicate(AnimationState<BlueGuardianEntity> animationState) {
         var controller = animationState.getController();
 
-        if (animationState.isMoving() && !this.isShooting()) {
-            controller.setAnimation(RawAnimation.begin().then("animation.gronk.idle", Animation.LoopType.LOOP));
+        if (animationState.isMoving() && !this.isShootingLazer() && !this.isShootingLightning()) {
+            controller.setAnimation(RawAnimation.begin().then("animation.guardian.walk", Animation.LoopType.LOOP));
             return PlayState.CONTINUE;
         }
 
-        controller.setAnimation(RawAnimation.begin().then("animation.gronk.idle", Animation.LoopType.LOOP));
+        controller.setAnimation(RawAnimation.begin().then("animation.guardian.idle", Animation.LoopType.LOOP));
         return PlayState.CONTINUE;
     }
 

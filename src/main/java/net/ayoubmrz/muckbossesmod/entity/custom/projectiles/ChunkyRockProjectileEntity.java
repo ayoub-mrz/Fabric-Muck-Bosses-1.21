@@ -34,7 +34,7 @@ public class ChunkyRockProjectileEntity extends PersistentProjectileEntity {
 
     @Override
     protected ItemStack getDefaultItemStack() {
-        return new ItemStack(ModItems.CHIEF_SPEAR);
+        return ItemStack.EMPTY;
     }
 
     public boolean isGrounded() {
@@ -74,11 +74,6 @@ public class ChunkyRockProjectileEntity extends PersistentProjectileEntity {
             }
 
         }
-    }
-
-    @Override
-    protected ItemStack asItemStack() {
-        return new ItemStack(ModItems.CHIEF_SPEAR);
     }
 
     @Override

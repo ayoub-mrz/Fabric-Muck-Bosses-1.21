@@ -1,4 +1,4 @@
-package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
+package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;

@@ -28,9 +28,6 @@ public class MuckBossesModClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(GronkBladeProjectileModel.GRONK_BLADE, GronkBladeProjectileModel::getTexturedModelData);
         EntityRendererRegistry.register(ModEntities.GRONK_BLADE, GronkBladeProjectileRenderer::new);
 
-        EntityModelLayerRegistry.registerModelLayer(GuardianLazerProjectileModel.GUARDIANLAZER, GuardianLazerProjectileModel::getTexturedModelData);
-        EntityRendererRegistry.register(ModEntities.GUARDIAN_LAZER, GuardianLazerProjectileRenderer::new);
-
         EntityModelLayerRegistry.registerModelLayer(GronkSwordProjectileModel.GRONK_SWORD, GronkSwordProjectileModel::getTexturedModelData);
         EntityRendererRegistry.register(ModEntities.GRONK_SWORD, GronkSwordProjectileRenderer::new);
 
