@@ -24,7 +24,7 @@ public class BigChunkModel<T extends BigChunkEntity> extends GeoModel<BigChunkEn
 
     @Override
     public Identifier getAnimationResource(BigChunkEntity big_chunkEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "animations/gronk.animation.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "animations/big_chunk.animation.json");
     }
 
     @Override

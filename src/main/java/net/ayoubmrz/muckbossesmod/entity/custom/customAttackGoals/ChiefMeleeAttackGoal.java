@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.ChiefSpearProjectileEntity;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
@@ -109,6 +109,26 @@ public class ChiefMeleeAttackGoal extends Goal {
 
         this.mob.setAttacking(false);
         this.mob.getNavigation().stop();
+
+        resetAllAttackStates();
+    }
+
+    private void resetAllAttackStates() {
+        waitForAnimation = 0;
+        animationTriggered = false;
+        hasAttacked = false;
+        timeWithoutAttack = 0;
+        particleAttackTimer = 0;
+        isPerformingParticleAttack = false;
+        particleDelayTimer = 0;
+        hasShooted = false;
+        timeAfterHits = 0;
+        lastShoot = null;
+        particlesNumber = 0;
+        playerIsNear = false;
+        isJumpAttacking = false;
+        jumpTargetPos = null;
+        jumpAttackPhase = 0;
     }
 
     public boolean shouldRunEveryTick() {
@@ -146,7 +166,7 @@ public class ChiefMeleeAttackGoal extends Goal {
             this.particleAttackTimer--;
 
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                UsefulMethods.spawnDamagingParticles(this.particlesNumber, this.mob);
+                UsefulMethods.spawnDamagingParticles(this.particlesNumber, this.mob, 0.0, 20.0f, 4.0, false);
             }
 
             if (this.particleAttackTimer <= 0) {

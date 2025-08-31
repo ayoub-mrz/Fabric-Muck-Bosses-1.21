@@ -44,7 +44,6 @@ public class ModItemGroups {
                         entries.add(ModItems.RED_GUARDIAN_SPAWN_EGG);
                         entries.add(ModItems.PURPLE_GUARDIAN_SPAWN_EGG);
                         entries.add(ModItems.BIG_CHUNK_SPAWN_EGG);
-                        entries.add(ModItems.BOB_SPAWN_EGG);
 
                     }).build());
 

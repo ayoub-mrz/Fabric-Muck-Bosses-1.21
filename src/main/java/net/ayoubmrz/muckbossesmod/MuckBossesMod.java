@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod;
 
+import net.ayoubmrz.muckbossesmod.command.ChunkyRockCommand;
 import net.ayoubmrz.muckbossesmod.command.GronkBladeCommand;
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.*;
@@ -26,6 +27,7 @@ public class MuckBossesMod implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 
 		GronkBladeCommand.register();
+		ChunkyRockCommand.register();
 
 		ModSounds.registerSounds();
 
@@ -38,7 +40,6 @@ public class MuckBossesMod implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.PURPLE_GUARDIAN, PurpleGuardianEntity.setAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.BIG_CHUNK, BigChunkEntity.setAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.CHIEF, ChiefEntity.setAttributes());
-		FabricDefaultAttributeRegistry.register(ModEntities.BOB, BobEntity.setAttributes());
 
 	}
 }

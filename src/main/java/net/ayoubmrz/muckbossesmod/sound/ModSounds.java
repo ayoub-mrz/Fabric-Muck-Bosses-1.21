@@ -18,6 +18,8 @@ public class ModSounds {
     public static final SoundEvent GUARDIAN_AMBIENT_3 = registerSoundEvent("guardian_ambient_3");
     public static final SoundEvent GUARDIAN_AMBIENT_4 = registerSoundEvent("guardian_ambient_4");
     public static final SoundEvent LASER_CHARGE_UP = registerSoundEvent("laser_charge_up");
+    public static final SoundEvent BIG_CHUNK_LOOP_AMBIENT = registerSoundEvent("big_chunk_loop_ambient");
+    public static final SoundEvent ROCK_ROLLING_LOOP = registerSoundEvent("rock_rolling_loop");
 
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = Identifier.of(MuckBossesMod.MOD_ID, name);

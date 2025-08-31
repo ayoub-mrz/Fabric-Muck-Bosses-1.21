@@ -2,7 +2,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,7 +44,7 @@ public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
     }
 
     @Override
-protected ItemStack getDefaultItemStack() { return new ItemStack(Items.STICK); }
+    protected ItemStack getDefaultItemStack() { return new ItemStack(Items.STICK); }
 
     public boolean isGrounded() { return inGround; }
 

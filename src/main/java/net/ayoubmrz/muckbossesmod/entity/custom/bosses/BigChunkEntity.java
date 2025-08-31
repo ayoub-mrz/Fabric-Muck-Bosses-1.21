@@ -1,5 +1,9 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.BigChunkMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GronkMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +21,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -29,11 +35,12 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
-    private static final TrackedData<Boolean> IS_SHOOTING = DataTracker.registerData(BigChunkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> IS_CLUB_SWING = DataTracker.registerData(BigChunkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private boolean isAttackWindingUp = false;
-    private int windupTicks = 0;
+    private static final TrackedData<Boolean> IS_SHOOTING_ROCKS = DataTracker.registerData(BigChunkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
     private int shootingTicks = 0;
+    private int stepSoundTicks = 0;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Big Chunk"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -46,70 +53,56 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        if (isAttackWindingUp) {
-            windupTicks--;
-
-            if (windupTicks <= 0) {
-                performAttack();
-                isAttackWindingUp = false;
-            }
-        }
-
-        if (isShooting()) {
+        if (isShootingRocks()) {
             shootingTicks++;
             if (shootingTicks > 5) {
-                setShooting(false);
+                setShootingRocks(false);
                 shootingTicks = 0;
             }
         }
-    }
 
-    public void startAttackWindup() {
-        this.isAttackWindingUp = true;
-        this.windupTicks = 10;
-    }
+        Vec3d velocity = this.getVelocity();
+        boolean isMoving = velocity.horizontalLength() > 0.01;
 
-    private void performAttack() {
-        LivingEntity target = this.getTarget();
-        if (this.isAlive() && target != null && this.canSee(target)) {
-            this.tryAttack(target);
+
+        if (isMoving && this.isOnGround()) {
+            stepSoundTicks++;
+            if (stepSoundTicks >= 20) {
+                UsefulMethods.playStepSound(this);
+                stepSoundTicks = 0;
+            }
+        } else {
+            stepSoundTicks = 0;
         }
-    }
-
-    @Override
-    public boolean tryAttack(Entity target) {
-        if (!isAttackWindingUp) {
-            startAttackWindup();
-            return false;
-        }
-        return super.tryAttack(target);
     }
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(IS_SHOOTING, false);
+        builder.add(IS_CLUB_SWING, false);
+        builder.add(IS_SHOOTING_ROCKS, false);
     }
 
-    public boolean isShooting() {
-        return this.dataTracker.get(IS_SHOOTING);
-    }
+    public boolean isShootingRocks() { return this.dataTracker.get(IS_SHOOTING_ROCKS); }
 
-    public void setShooting(boolean shooting) {
-        this.dataTracker.set(IS_SHOOTING, shooting);
-    }
+    public void setShootingRocks(boolean attack) { this.dataTracker.set(IS_SHOOTING_ROCKS, attack); }
+
+    public boolean isClubSwing() { return this.dataTracker.get(IS_CLUB_SWING); }
+
+    public void setClubSwing(boolean shooting) { this.dataTracker.set(IS_CLUB_SWING, shooting); }
 
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0F)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4F)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35.0F);
+                .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.0F)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
+        this.goalSelector.add(1, new BigChunkMeleeAttackGoal(this, 0.3F, true));
         this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.4f, 1));
         this.goalSelector.add(4, new LookAroundGoal(this));
         this.goalSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
@@ -117,19 +110,33 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-//        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
-        controllers.add(new AnimationController<>(this, "attackController", 0, this::attackPredicate));
-        controllers.add(new AnimationController<>(this, "shootController", 0, this::shootPredicate));
+        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate));
+        controllers.add(new AnimationController<>(this, "attackController", 5, this::attackPredicate));
+        controllers.add(new AnimationController<>(this, "swingAttackController", 5, this::swingAttackPredicate));
+        controllers.add(new AnimationController<>(this, "shootController", 5, this::shootPredicate));
+    }
+
+    private PlayState swingAttackPredicate(AnimationState<BigChunkEntity> event) {
+
+        if (this.isClubSwing()) {
+            event.getController().forceAnimationReset();
+            event.getController().setAnimation(
+                    RawAnimation.begin().then("animation.big_chunk.swing", Animation.LoopType.PLAY_ONCE)
+            );
+            return PlayState.CONTINUE;
+        }
+
+        return PlayState.CONTINUE;
     }
 
     private PlayState shootPredicate(AnimationState<BigChunkEntity> event) {
 
-        if (this.isShooting()) {
+        if (this.isShootingRocks()) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
-                    RawAnimation.begin().then("animation.gronk.shoot", Animation.LoopType.PLAY_ONCE)
+                    RawAnimation.begin().then("animation.big_chunk.jump", Animation.LoopType.PLAY_ONCE)
             );
-            setShooting(false);
+            setShootingRocks(false);
             return PlayState.CONTINUE;
         }
 
@@ -140,7 +147,7 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
         if (this.handSwinging) {
             event.getController().forceAnimationReset();
             event.getController().setAnimation(
-                    RawAnimation.begin().then("animation.gronk.attack", Animation.LoopType.PLAY_ONCE)
+                    RawAnimation.begin().then("animation.big_chunk.attack", Animation.LoopType.PLAY_ONCE)
             );
             this.handSwinging = false;
             return PlayState.CONTINUE;
@@ -152,12 +159,12 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
     private PlayState predicate(AnimationState<BigChunkEntity> animationState) {
         var controller = animationState.getController();
 
-        if (animationState.isMoving() && !this.isShooting()) {
-            controller.setAnimation(RawAnimation.begin().then("animation.gronk.idle", Animation.LoopType.LOOP));
+        if (animationState.isMoving() && !this.isShootingRocks()) {
+            controller.setAnimation(RawAnimation.begin().then("animation.big_chunk.walk", Animation.LoopType.LOOP));
             return PlayState.CONTINUE;
         }
 
-        controller.setAnimation(RawAnimation.begin().then("animation.gronk.idle", Animation.LoopType.LOOP));
+        controller.setAnimation(RawAnimation.begin().then("animation.big_chunk.idle", Animation.LoopType.LOOP));
         return PlayState.CONTINUE;
     }
 

@@ -50,12 +50,7 @@ public class ModEntities {
     public static final EntityType<BigChunkEntity> BIG_CHUNK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "big_chunk"),
             EntityType.Builder.create(BigChunkEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(4.4f, 12f).build());
-
-    public static final EntityType<BobEntity> BOB = Registry.register(Registries.ENTITY_TYPE,
-            Identifier.of(MuckBossesMod.MOD_ID, "bob"),
-            EntityType.Builder.create(BobEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(4.0f, 6f).build());
+                    .dimensions(1.8f, 4f).build());
 
     public static final EntityType<ChiefSpearProjectileEntity> CHIEF_SPEAR = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "chief_spear"),
@@ -75,7 +70,7 @@ public class ModEntities {
     public static final EntityType<ChunkyRockProjectileEntity> CHUNKY_ROCK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "chunky_rock"),
             EntityType.Builder.<ChunkyRockProjectileEntity>create(ChunkyRockProjectileEntity::new, SpawnGroup.MISC)
-                    .dimensions(3f, 2.8f).build());
+                    .dimensions(3.0f, 2.4f).build());
 
     public static void registerModEntities() {
         MuckBossesMod.LOGGER.info("Registering Mod Bosses for " + MuckBossesMod.MOD_ID);

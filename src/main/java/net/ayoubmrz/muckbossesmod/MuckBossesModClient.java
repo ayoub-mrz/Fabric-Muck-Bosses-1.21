@@ -20,7 +20,6 @@ public class MuckBossesModClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.PURPLE_GUARDIAN, PurpleGuardianRenderer::new);
         EntityRendererRegistry.register(ModEntities.BIG_CHUNK, BigChunkRenderer::new);
         EntityRendererRegistry.register(ModEntities.CHIEF, ChiefRenderer::new);
-        EntityRendererRegistry.register(ModEntities.BOB, BobRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ChiefSpearProjectileModel.CHIEF_SPEAR, ChiefSpearProjectileModel::getTexturedModelData);
         EntityRendererRegistry.register(ModEntities.CHIEF_SPEAR, ChiefSpearProjectileRenderer::new);

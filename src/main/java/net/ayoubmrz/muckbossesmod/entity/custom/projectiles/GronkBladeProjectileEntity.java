@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -9,10 +9,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -29,6 +32,7 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     private float damage = 20.0f;
     private Vec3d originalVelocity;
     private double targetSpeed = 0.8;
+    private boolean hasHitBlock = false;
 
     public GronkBladeProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -62,12 +66,6 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
 
         super.tick();
 
-        if (isInsideBlock() || willHitBlock()) {
-            this.noClip = true;
-        } else {
-            this.noClip = false;
-        }
-
         this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
                 ModSounds.BLADE_MOVE, SoundCategory.NEUTRAL, 0.4f, 0.2f);
 
@@ -77,125 +75,56 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
         this.age++;
     }
 
-    private boolean isInsideBlock() {
-        Box entityBox = this.getBoundingBox();
-        return hasCollisionInBox(entityBox);
-    }
+    @Override
+    protected void onBlockHit(BlockHitResult blockHitResult) {
+        super.onBlockHit(blockHitResult);
 
-    private boolean willHitBlock() {
-        if (this.originalVelocity == null) return false;
-
-        Box currentBox = this.getBoundingBox();
-        Box nextBox = currentBox.offset(this.originalVelocity);
-
-        return hasCollisionInBox(nextBox);
-    }
-
-    private boolean hasCollisionInBox(Box box) {
+        BlockPos hitPos = blockHitResult.getBlockPos();
         World world = this.getWorld();
 
-        int minX = (int) Math.floor(box.minX);
-        int minY = (int) Math.floor(box.minY);
-        int minZ = (int) Math.floor(box.minZ);
-        int maxX = (int) Math.floor(box.maxX);
-        int maxY = (int) Math.floor(box.maxY);
-        int maxZ = (int) Math.floor(box.maxZ);
+        if (isBlockOneTallObstacle(hitPos)) {
+            hasHitBlock = false;
+            this.inGround = false;
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    BlockPos pos = new BlockPos(x, y, z);
-                    BlockState blockState = world.getBlockState(pos);
+            this.setPosition(this.getX(), hitPos.getY() + 1.5, this.getZ());
 
-                    if (blockState.isAir()) {
-                        continue;
-                    }
-
-                    VoxelShape collisionShape = blockState.getCollisionShape(world, pos);
-                    if (!collisionShape.isEmpty()) {
-                        VoxelShape offsetShape = collisionShape.offset(x, y, z);
-
-                        for (Box collisionBox : offsetShape.getBoundingBoxes()) {
-                            if (box.intersects(collisionBox)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
+            if (this.originalVelocity != null) {
+                this.setVelocity(this.originalVelocity);
             }
-        }
 
-        return false;
-    }
-
-    public void setStableVelocity(Vec3d velocity) {
-        this.originalVelocity = velocity;
-        this.targetSpeed = velocity.length();
-        this.setVelocity(velocity);
-    }
-
-    public static void spawnBladeSpread(World world, LivingEntity thrower) {
-        spawnBladeSpread(world, thrower, null);
-    }
-
-    public static void spawnBladeSpread(World world, LivingEntity thrower, Vec3d targetPos) {
-        if (world.isClient) return;
-
-        float baseYaw;
-        float basePitch;
-
-        if (targetPos != null) {
-            // Calculate direction from thrower to target
-            Vec3d throwerPos = new Vec3d(thrower.getX(), thrower.getEyeY(), thrower.getZ());
-            Vec3d direction = targetPos.subtract(throwerPos).normalize();
-
-            // Calculate yaw and pitch based on target direction
-            double horizontalDistance = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
-            baseYaw = (float) Math.toDegrees(Math.atan2(-direction.x, direction.z));
-            basePitch = (float) Math.toDegrees(Math.atan2(-direction.y, horizontalDistance));
         } else {
-            // Use entity's facing direction
-            baseYaw = thrower.getYaw();
-            basePitch = thrower.getPitch();
+            // Create explosion for tall obstacles
+            if (!world.isClient) {
+                world.createExplosion(
+                        this,
+                        this.getX(),
+                        this.getY(),
+                        this.getZ(),
+                        3.4f,
+                        false,
+                        World.ExplosionSourceType.MOB
+                );
+            }
+
+            this.discard();
+        }
+    }
+
+    private boolean isBlockOneTallObstacle(BlockPos hitPos) {
+        World world = this.getWorld();
+
+        if (!world.getBlockState(hitPos).isSolidBlock(world, hitPos)) {
+            return false;
         }
 
-        double offsetY;
-        if (thrower instanceof PlayerEntity player) {
-            offsetY = 1.5;
-        } else {
-            offsetY = 3;
-        }
+        BlockPos abovePos = hitPos.up();
+        return world.getBlockState(abovePos).isAir();
+    }
 
-        double yawRadians = Math.toRadians(baseYaw);
-        double pitchRadians = Math.toRadians(basePitch);
-
-        double sideX = -Math.sin(yawRadians + Math.PI / 2);
-        double sideZ = Math.cos(yawRadians + Math.PI / 2);
-
-        for (int i = 0; i < 5; i++) {
-            GronkBladeProjectileEntity blade = new GronkBladeProjectileEntity(world, thrower);
-
-            double sideOffset = (i - 2) * 2.0;
-
-            double finalX = thrower.getX() + (sideX * sideOffset);
-            double finalY = thrower.getEyeY() - offsetY;
-            double finalZ = thrower.getZ() + (sideZ * sideOffset);
-
-            blade.setPosition(finalX, finalY, finalZ);
-
-            float angleOffset = (i - 2) * 15.0f;
-
-            float bladeYaw = baseYaw + angleOffset;
-            double bladeYawRadians = Math.toRadians(bladeYaw);
-
-            double bladeForwardX = -Math.sin(bladeYawRadians) * Math.cos(pitchRadians);
-            double bladeForwardZ = Math.cos(bladeYawRadians) * Math.cos(pitchRadians);
-
-            double speed = 0.8;
-            Vec3d velocity = new Vec3d(bladeForwardX * speed, 0, bladeForwardZ * speed);
-            blade.setStableVelocity(velocity);
-
-            world.spawnEntity(blade);
+    @Override
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        if(false) {
+            super.playSound(sound, volume, pitch);
         }
     }
 
@@ -203,6 +132,12 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     protected ItemStack getDefaultItemStack() { return new ItemStack(Items.STICK); }
 
     public boolean isGrounded() { return inGround; }
+
+    public void setStableVelocity(Vec3d velocity) {
+        this.originalVelocity = velocity;
+        this.targetSpeed = velocity.length();
+        this.setVelocity(velocity);
+    }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {

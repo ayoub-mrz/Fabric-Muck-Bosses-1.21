@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.BlueGuardianEntity;
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -57,7 +57,7 @@ public class GuardianMeleeAttackGoal extends Goal {
     private boolean shootLazer = false;
 
     private final LinkedList<Vec3d> targetPositionHistory = new LinkedList<>();
-    private final int POSITION_HISTORY_SIZE = 5;
+    private final int POSITION_HISTORY_SIZE = 15;
 
     public GuardianMeleeAttackGoal(BlueGuardianEntity mob, double speed, boolean pauseWhenMobIdle) {
         this.mob = mob;
@@ -124,34 +124,21 @@ public class GuardianMeleeAttackGoal extends Goal {
     }
 
     private void resetAllAttackStates() {
-        // Reset laser attack states
         this.shootLazer = false;
         this.waitForAnimation = 0;
         this.animationTriggered = false;
-
-        // Reset general attack states
         this.hasAttacked = false;
         this.hasShooted = false;
         this.timeAfterHits = 0;
         this.timeWithoutAttack = 0;
         this.lastShoot = null;
-
-        // Reset particle attack states
-        this.isPerformingParticleAttack = false;
-        this.particleDelayTimer = 0;
-        this.particleAttackTimer = 0;
-        this.particlesNumber = 0;
-
-        // Reset jump attack states
         this.isJumpAttacking = false;
         this.jumpTargetPos = null;
         this.jumpAttackPhase = 0;
         this.attackTicks = 0;
 
-        // Clear position history
         this.targetPositionHistory.clear();
 
-        // Restore normal gravity in case entity was flying
         this.mob.setNoGravity(false);
     }
 
@@ -163,7 +150,6 @@ public class GuardianMeleeAttackGoal extends Goal {
         ++this.shootCooldown;
         ++this.timeWithoutAttack;
 
-        // Track target position history every tick
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
             updateTargetPositionHistory(target);
@@ -187,25 +173,6 @@ public class GuardianMeleeAttackGoal extends Goal {
 
         if (shootLazer) {
             shootLazerProjectile();
-        }
-
-        if (this.isPerformingParticleAttack) {
-            if (this.particleDelayTimer > 0) {
-                this.particleDelayTimer--;
-                return;
-            }
-
-            this.particleAttackTimer--;
-
-            if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                UsefulMethods.spawnDamagingParticles(this.particlesNumber, this.mob);
-            }
-
-            if (this.particleAttackTimer <= 0) {
-                this.isPerformingParticleAttack = false;
-            }
-
-            return;
         }
 
         LivingEntity livingEntity = this.mob.getTarget();
@@ -259,11 +226,9 @@ public class GuardianMeleeAttackGoal extends Goal {
         if (targetPositionHistory.size() > ticksAgo) {
             return targetPositionHistory.get(ticksAgo);
         }
-        // If we don't have enough history, return the oldest position we have
         if (!targetPositionHistory.isEmpty()) {
             return targetPositionHistory.getLast();
         }
-        // Fallback to current target position if no history exists
         LivingEntity target = this.mob.getTarget();
         return target != null ? new Vec3d(target.getX(), target.getY(), target.getZ()) : null;
     }
@@ -288,8 +253,7 @@ public class GuardianMeleeAttackGoal extends Goal {
         if (this.waitForAnimation <= 30) {
             Vec3d currentVelocity = this.mob.getVelocity();
             this.mob.setVelocity(currentVelocity.x, 0.35, currentVelocity.z);
-        }
-        else if (this.waitForAnimation <= 50) {
+        } else if (this.waitForAnimation <= 50) {
             Vec3d currentVelocity = this.mob.getVelocity();
             this.mob.setVelocity(currentVelocity.x, -1.6, currentVelocity.z);
             if (this.waitForAnimation == 40) {
@@ -464,11 +428,9 @@ public class GuardianMeleeAttackGoal extends Goal {
             dY /= totalDistance;
             dZ /= totalDistance;
 
-            // Check for block collisions along the laser path
             Vec3d hitPoint = checkLaserCollision(laserStartX, laserStartY, laserStartZ,
                     targetX, targetY, targetZ, serverWorld);
 
-            // If we hit a block, adjust the laser endpoint
             double laserEndX, laserEndY, laserEndZ;
             double actualDistance;
 
@@ -491,13 +453,15 @@ public class GuardianMeleeAttackGoal extends Goal {
             int particleCount = (int) Math.min(actualDistance * 2, 100);
             double stepSize = actualDistance / particleCount;
 
-            // Recalculate direction for the actual laser path
             double actualDX = laserEndX - laserStartX;
             double actualDY = laserEndY - laserStartY;
             double actualDZ = laserEndZ - laserStartZ;
             actualDX /= actualDistance;
             actualDY /= actualDistance;
             actualDZ /= actualDistance;
+
+            int sonicBoomCount = (int) Math.min(actualDistance * 1.5, 75);
+            double sonicStepSize = actualDistance / sonicBoomCount;
 
             for (int i = 0; i < particleCount; i++) {
                 double currentX = laserStartX + (actualDX * stepSize * i);
@@ -532,14 +496,6 @@ public class GuardianMeleeAttackGoal extends Goal {
             }
 
             serverWorld.spawnParticles(
-                    ParticleTypes.EXPLOSION,
-                    laserEndX, laserEndY, laserEndZ,
-                    1,
-                    0.2, 0.2, 0.2,
-                    0.0
-            );
-
-            serverWorld.spawnParticles(
                     ParticleTypes.ELECTRIC_SPARK,
                     laserEndX, laserEndY, laserEndZ,
                     15,
@@ -547,7 +503,6 @@ public class GuardianMeleeAttackGoal extends Goal {
                     0.1
             );
 
-            // Only damage along the actual laser path (stops at collision point)
             damageLaserPath(laserStartX, laserStartY, laserStartZ, laserEndX, laserEndY, laserEndZ, serverWorld);
 
             this.mob.getWorld().playSound(
@@ -565,6 +520,14 @@ public class GuardianMeleeAttackGoal extends Goal {
                     1.5f,
                     2.0f
             );
+
+            this.mob.getWorld().playSound(
+                    null, laserStartX, laserStartY, laserStartZ,
+                    SoundEvents.ENTITY_WARDEN_SONIC_BOOM,
+                    SoundCategory.HOSTILE,
+                    1.0f,
+                    1.2f
+            );
         }
     }
 
@@ -575,7 +538,6 @@ public class GuardianMeleeAttackGoal extends Goal {
         Vec3d start = new Vec3d(startX, startY, startZ);
         Vec3d end = new Vec3d(endX, endY, endZ);
 
-        // Use Minecraft's built-in raycast to check for block collisions
         BlockHitResult hitResult = world.raycast(
                 new RaycastContext(
                         start,
@@ -586,19 +548,15 @@ public class GuardianMeleeAttackGoal extends Goal {
                 )
         );
 
-        // If we hit a block, return the hit position
         if (hitResult.getType() != HitResult.Type.MISS) {
-            // Get the block state at the hit position
             BlockPos hitPos = hitResult.getBlockPos();
             BlockState blockState = world.getBlockState(hitPos);
 
-            // Check if the block should stop the laser (solid blocks)
             if (!blockState.isAir() && blockState.isSolidBlock(world, hitPos)) {
                 return hitResult.getPos();
             }
         }
 
-        // No collision found, laser can reach the target
         return null;
     }
 
@@ -634,7 +592,7 @@ public class GuardianMeleeAttackGoal extends Goal {
                 float damage = 6.0f;
                 entity.damage(world.getDamageSources().mobAttack(this.mob), damage);
 
-                UsefulMethods.applyKnockback(entity, this.mob, 0.02f, 0.2f);
+                UsefulMethods.applyKnockback(entity, this.mob, 0.05f, 0.05f);
 
                 world.spawnParticles(
                         ParticleTypes.FLAME,

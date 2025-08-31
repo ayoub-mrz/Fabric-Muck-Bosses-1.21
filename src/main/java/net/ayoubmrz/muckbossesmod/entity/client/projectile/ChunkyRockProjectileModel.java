@@ -19,8 +19,8 @@ public class ChunkyRockProjectileModel extends EntityModel<ChiefSpearProjectileE
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData chunky_rock = modelPartData.addChild("chunky_rock", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -14.0F, -8.0F, 16.0F, 14.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 14.0F, 0.0F));
-        return TexturedModelData.of(modelData, 64, 64);
+        ModelPartData chunky_rock = modelPartData.addChild("chunky_rock", ModelPartBuilder.create().uv(0, 0).cuboid(-28.0F, -18.0F, -28.0F, 40.0F, 40.0F, 40.0F, new Dilation(0.0F)), ModelTransform.pivot(4.0F, 4.0F, -4.0F));
+        return TexturedModelData.of(modelData, 256, 256);
     }
 
     @Override

@@ -64,5 +64,17 @@
     "sounds": [
       "muckbossesmod:laser_charge_up"
     ]
+  },
+  "big_chunk_loop_ambient": {
+    "subtitle": "sounds.muckbossesmod.big_chunk_loop_ambient",
+    "sounds": [
+      "muckbossesmod:big_chunk_loop_ambient"
+    ]
+  },
+  "rock_rolling_loop": {
+    "subtitle": "sounds.muckbossesmod.rock_rolling_loop",
+    "sounds": [
+      "muckbossesmod:rock_rolling_loop"
+    ]
   }
 }

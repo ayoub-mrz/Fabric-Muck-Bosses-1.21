@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.ChiefMeleeAttackGoal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

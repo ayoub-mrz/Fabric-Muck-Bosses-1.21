@@ -26,18 +26,11 @@ public class ChunkyRockProjectileRenderer extends EntityRenderer<ChunkyRockProje
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
-        matrices.scale(3f, 3f, 3f);
-
-        if(entity.groundedOffset != null) {
-            if(!entity.isGrounded()) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-                matrices.translate(0, -1.0f, 0);
-            } else {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.groundedOffset.getY()));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.groundedOffset.getX()));
-                matrices.translate(0, -0.5f, 0);
-            }
+        if(!entity.isGrounded()) {
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getRenderingRotation() * 10f));
         }
+
 
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
                 this.model.getLayer(Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/chunky_rock.png")), false, false);

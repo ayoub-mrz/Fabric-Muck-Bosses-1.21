@@ -11,7 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.entity.LivingEntity;
 
-public class GronkBladeCommand {
+public class ChunkyRockCommand {
 
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -20,27 +20,27 @@ public class GronkBladeCommand {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
-        dispatcher.register(CommandManager.literal("ThrowGronkBlade")
+        dispatcher.register(CommandManager.literal("ThrowChunkyRock")
                 .requires(source -> source.hasPermissionLevel(2))
-                .executes(GronkBladeCommand::executeGronkBlade));
+                .executes(ChunkyRockCommand::executeChunkyRock));
     }
 
-    private static int executeGronkBlade(CommandContext<ServerCommandSource> context) {
+    private static int executeChunkyRock(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
 
         try {
             if (source.getEntity() instanceof LivingEntity livingEntity) {
 
-                UsefulMethods.spawnProjectileSpread(livingEntity.getWorld(), livingEntity, "blade");
+                UsefulMethods.spawnProjectileSpread(livingEntity.getWorld(), livingEntity, "rock");
 
-                source.sendFeedback(() -> Text.literal("Gronk Blade spread spawned!"), false);
+                source.sendFeedback(() -> Text.literal("Chunky Rocks spread spawned!"), false);
                 return 1;
             } else {
                 source.sendError(Text.literal("This command must be executed by a living entity!"));
                 return 0;
             }
         } catch (Exception e) {
-            source.sendError(Text.literal("Failed to spawn Gronk Blade spread: " + e.getMessage()));
+            source.sendError(Text.literal("Failed to spawn Chunky Rock spread: " + e.getMessage()));
             return 0;
         }
     }

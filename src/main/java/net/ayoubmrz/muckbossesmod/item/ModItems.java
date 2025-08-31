@@ -34,8 +34,6 @@ public class ModItems {
             new SpawnEggItem(ModEntities.PURPLE_GUARDIAN, 0x272929, 0xda30ff, new Item.Settings()));
     public static final Item BIG_CHUNK_SPAWN_EGG = registerItem("big_chunk_spawn_egg",
             new SpawnEggItem(ModEntities.BIG_CHUNK, 0x7a613a, 0xf3d19b, new Item.Settings()));
-    public static final Item BOB_SPAWN_EGG = registerItem("bob_spawn_egg",
-            new SpawnEggItem(ModEntities.BOB, 0x255e34, 0xb6fece, new Item.Settings()));
 
     public static final Item RED_GEM = registerItem("red_gem", new Item( new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item YELLOW_GEM = registerItem("yellow_gem", new Item( new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
@@ -119,7 +117,6 @@ public class ModItems {
             entries.add(RED_GUARDIAN_SPAWN_EGG);
             entries.add(PURPLE_GUARDIAN_SPAWN_EGG);
             entries.add(BIG_CHUNK_SPAWN_EGG);
-            entries.add(BOB_SPAWN_EGG);
         });
 
     }
