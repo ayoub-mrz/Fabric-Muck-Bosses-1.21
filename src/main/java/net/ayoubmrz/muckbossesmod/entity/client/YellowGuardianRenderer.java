@@ -16,7 +16,7 @@ public class YellowGuardianRenderer extends GeoEntityRenderer<YellowGuardianEnti
 
     @Override
     public Identifier getTextureLocation(YellowGuardianEntity animatable) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian4.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/yellow_guardian.png");
     }
 
     @Override

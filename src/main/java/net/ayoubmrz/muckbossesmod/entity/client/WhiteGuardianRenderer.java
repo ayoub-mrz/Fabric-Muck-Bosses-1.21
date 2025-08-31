@@ -16,7 +16,7 @@ public class WhiteGuardianRenderer extends GeoEntityRenderer<WhiteGuardianEntity
 
     @Override
     public Identifier getTextureLocation(WhiteGuardianEntity animatable) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian1.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/white_guardian.png");
     }
 
     @Override

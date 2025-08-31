@@ -19,12 +19,12 @@ public class PurpleGuardianModel<T extends PurpleGuardianEntity> extends GeoMode
 
     @Override
     public Identifier getTextureResource(PurpleGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian6.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/purple_guardian.png");
     }
 
     @Override
     public Identifier getAnimationResource(PurpleGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "animations/gronk.animation.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "animations/guardian.animation.json");
     }
 
     @Override

@@ -19,12 +19,12 @@ public class GreenGuardianModel<T extends GreenGuardianEntity> extends GeoModel<
 
     @Override
     public Identifier getTextureResource(GreenGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian3.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/green_guardian.png");
     }
 
     @Override
     public Identifier getAnimationResource(GreenGuardianEntity guardianEntity) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "animations/gronk.animation.json");
+        return Identifier.of(MuckBossesMod.MOD_ID, "animations/guardian.animation.json");
     }
 
     @Override

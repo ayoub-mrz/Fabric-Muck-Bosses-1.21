@@ -32,7 +32,7 @@ import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceC
 import software.bernie.geckolib.animation.*;
 
 
-public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
+public class BlueGuardianEntity extends HostileEntity implements GeoEntity, GuardianEntity {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -190,14 +190,17 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
 
     public boolean isShootingLazer() { return this.dataTracker.get(IS_SHOOTING_LAZER); }
 
+    @Override
     public void setShootingLazer(boolean shooting) { this.dataTracker.set(IS_SHOOTING_LAZER, shooting); }
 
     public boolean isShootingLightning() { return this.dataTracker.get(IS_SHOOTING_LIGHTNING); }
 
+    @Override
     public void setShootingLightning(boolean shooting) { this.dataTracker.set(IS_SHOOTING_LIGHTNING, shooting); }
 
     public boolean isLazerSoundStart() { return this.dataTracker.get(IS_LASER_SOUND_START); }
 
+    @Override
     public void setLazerSoundStart(boolean shooting) { this.dataTracker.set(IS_LASER_SOUND_START, shooting); }
 
     public static DefaultAttributeContainer.Builder setAttributes() {
@@ -211,7 +214,7 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new GuardianMeleeAttackGoal(this, 0.8f, true));
+        this.goalSelector.add(1, new GuardianMeleeAttackGoal<>(this, 0.8f, true));
         this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.6f, 1));
         this.goalSelector.add(4, new LookAroundGoal(this));
         this.goalSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, true));

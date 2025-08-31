@@ -1,13 +1,14 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.BlueGuardianEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.GuardianEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -24,8 +25,8 @@ import net.minecraft.world.RaycastContext;
 
 import java.util.*;
 
-public class GuardianMeleeAttackGoal extends Goal {
-    protected final BlueGuardianEntity mob;
+public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> extends Goal {
+    protected final T mob;
     private final double speed;
     private final boolean pauseWhenMobIdle;
     private Path path;
@@ -59,7 +60,7 @@ public class GuardianMeleeAttackGoal extends Goal {
     private final LinkedList<Vec3d> targetPositionHistory = new LinkedList<>();
     private final int POSITION_HISTORY_SIZE = 15;
 
-    public GuardianMeleeAttackGoal(BlueGuardianEntity mob, double speed, boolean pauseWhenMobIdle) {
+    public GuardianMeleeAttackGoal(T mob, double speed, boolean pauseWhenMobIdle) {
         this.mob = mob;
         this.speed = speed;
         this.pauseWhenMobIdle = pauseWhenMobIdle;
@@ -542,8 +543,8 @@ public class GuardianMeleeAttackGoal extends Goal {
                 new RaycastContext(
                         start,
                         end,
-                        RaycastContext.ShapeType.COLLIDER, // Check collision boxes
-                        RaycastContext.FluidHandling.NONE, // Ignore fluids
+                        RaycastContext.ShapeType.COLLIDER,
+                        RaycastContext.FluidHandling.NONE,
                         this.mob
                 )
         );
@@ -588,7 +589,7 @@ public class GuardianMeleeAttackGoal extends Goal {
                     entityX, entityY, entityZ
             );
 
-            if (distanceToLine <= 2.0) {
+            if (distanceToLine <= 2.0 & entity.getClass() != this.mob.getClass()) {
                 float damage = 6.0f;
                 entity.damage(world.getDamageSources().mobAttack(this.mob), damage);
 

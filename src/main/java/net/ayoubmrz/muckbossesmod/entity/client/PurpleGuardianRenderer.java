@@ -16,7 +16,7 @@ public class PurpleGuardianRenderer extends GeoEntityRenderer<PurpleGuardianEnti
 
     @Override
     public Identifier getTextureLocation(PurpleGuardianEntity animatable) {
-        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/guardian6.png");
+        return Identifier.of(MuckBossesMod.MOD_ID, "textures/entity/purple_guardian.png");
     }
 
     @Override
