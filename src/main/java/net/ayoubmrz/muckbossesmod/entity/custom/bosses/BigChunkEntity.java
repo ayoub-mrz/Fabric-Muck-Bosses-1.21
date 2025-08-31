@@ -26,7 +26,7 @@ import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceC
 import software.bernie.geckolib.animation.*;
 
 
-public class BigChunkEntity extends HostileEntity implements GeoEntity {
+public class BigChunkEntity extends HostileEntity implements GeoEntity, BaseValues {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -34,8 +34,12 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
 
     private static final TrackedData<Boolean> IS_SHOOTING_ROCKS = DataTracker.registerData(BigChunkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    private final int playersCount = this.getWorld().getPlayers().size();
+    private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+
     private int shootingTicks = 0;
     private int stepSoundTicks = 0;
+    private boolean hasInitializedHealth = false;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Big Chunk"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -47,6 +51,11 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if (!hasInitializedHealth) {
+            initializeDynamicHealth();
+            hasInitializedHealth = true;
+        }
 
         if (isShootingRocks()) {
             shootingTicks++;
@@ -69,6 +78,18 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity {
         } else {
             stepSoundTicks = 0;
         }
+    }
+
+    private void initializeDynamicHealth() {
+        // Each player adds 10% more health
+        float playerMultiplier = 1.0f + (playersCount * 0.1f);
+
+        // Each day adds 12% more health
+        float dayMultiplier = 1.0f + ((numberOfDays - 1) * 0.12f);
+
+        float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
+        this.setHealth(finalHealth);
     }
 
     @Override

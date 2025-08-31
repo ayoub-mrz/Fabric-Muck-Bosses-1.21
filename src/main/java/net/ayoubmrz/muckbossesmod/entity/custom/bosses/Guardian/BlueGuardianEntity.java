@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GuardianMeleeAttackGoal;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
@@ -32,7 +33,7 @@ import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceC
 import software.bernie.geckolib.animation.*;
 
 
-public class BlueGuardianEntity extends HostileEntity implements GeoEntity, GuardianEntity {
+public class BlueGuardianEntity extends HostileEntity implements GeoEntity, GuardianEntity, BaseValues {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -41,6 +42,9 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity, Guar
     private static final TrackedData<Boolean> IS_SHOOTING_LIGHTNING = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private static final TrackedData<Boolean> IS_LASER_SOUND_START = DataTracker.registerData(BlueGuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private final int playersCount = this.getWorld().getPlayers().size();
+    private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
@@ -52,6 +56,7 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity, Guar
     private int soundTicks = 0;
     private float soundVolum = 3.0f;
     private float soundPitch = 0.6f;
+    private boolean hasInitializedHealth = false;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Blue Guardian"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -64,6 +69,11 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity, Guar
     public void tick() {
         ++soundTicks;
         super.tick();
+
+        if (!hasInitializedHealth) {
+            initializeDynamicHealth();
+            hasInitializedHealth = true;
+        }
 
         if (isAttackWindingUp) {
             windupTicks--;
@@ -120,6 +130,18 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity, Guar
             }
         }
 
+    }
+
+    private void initializeDynamicHealth() {
+        // Each player adds 10% more health
+        float playerMultiplier = 1.0f + (playersCount * 0.1f);
+
+        // Each day adds 12% more health
+        float dayMultiplier = 1.0f + ((numberOfDays - 1) * 0.12f);
+
+        float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
+        this.setHealth(finalHealth);
     }
 
     public void startAttackWindup() {

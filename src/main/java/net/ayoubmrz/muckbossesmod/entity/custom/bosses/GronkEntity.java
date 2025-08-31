@@ -13,6 +13,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
@@ -23,8 +25,10 @@ import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceC
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.animation.AnimationState;
 
+import java.util.List;
 
-public class GronkEntity extends HostileEntity implements GeoEntity {
+
+public class GronkEntity extends HostileEntity implements GeoEntity, BaseValues {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -34,21 +38,28 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     private static final TrackedData<String> GRONK_STATS = DataTracker.registerData(GronkEntity.class, TrackedDataHandlerRegistry.STRING);
 
+    private final int playersCount = this.getWorld().getPlayers().size();
+    private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
     private int shootingTicks = 0;
     private int stepSoundTicks = 0;
+    private boolean hasInitializedHealth = false;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Gronk"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
 
-    public GronkEntity(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
-    }
+    public GronkEntity(EntityType<? extends HostileEntity> entityType, World world) { super(entityType, world); }
 
     @Override
     public void tick() {
         super.tick();
+
+        if (!hasInitializedHealth) {
+            initializeDynamicHealth();
+            hasInitializedHealth = true;
+        }
 
         if (isAttackWindingUp) {
             windupTicks--;
@@ -90,6 +101,18 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     }
 
+    private void initializeDynamicHealth() {
+        // Each player adds 10% more health
+        float playerMultiplier = 1.0f + (playersCount * 0.1f);
+
+        // Each day adds 12% more health
+        float dayMultiplier = 1.0f + ((numberOfDays - 1) * 0.12f);
+
+        float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
+        this.setHealth(finalHealth);
+    }
+
     public void startAttackWindup() {
         this.isAttackWindingUp = true;
         this.windupTicks = 10;
@@ -121,9 +144,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     public boolean isShootingSword() { return this.dataTracker.get(IS_SHOOTING_SWORD); }
 
-    public void setShootingSword(boolean shooting) {
-        this.dataTracker.set(IS_SHOOTING_SWORD, shooting);
-    }
+    public void setShootingSword(boolean shooting) { this.dataTracker.set(IS_SHOOTING_SWORD, shooting); }
 
     public boolean isShootingBlades() { return this.dataTracker.get(IS_SHOOTING_BLADES); }
 
@@ -135,7 +156,7 @@ public class GronkEntity extends HostileEntity implements GeoEntity {
 
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0F)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0F)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);

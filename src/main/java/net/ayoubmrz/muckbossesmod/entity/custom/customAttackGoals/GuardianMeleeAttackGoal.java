@@ -55,7 +55,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
     private Vec3d jumpTargetPos = null;
     private int jumpAttackPhase = 0;
     private int attackTicks = 0;
-    private boolean shootLazer = false;
+    private boolean shootLaser = false;
 
     private final LinkedList<Vec3d> targetPositionHistory = new LinkedList<>();
     private final int POSITION_HISTORY_SIZE = 15;
@@ -125,7 +125,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
     }
 
     private void resetAllAttackStates() {
-        this.shootLazer = false;
+        this.shootLaser = false;
         this.waitForAnimation = 0;
         this.animationTriggered = false;
         this.hasAttacked = false;
@@ -161,7 +161,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             this.hasShooted = false;
             this.hasAttacked = true;
             int randomNum = random.nextInt(0, 10);
-            this.lastShoot = randomNum < 5 ? "lightning" : "lazer";
+            this.lastShoot = randomNum < 5 ? "lightning" : "laser";
             this.timeWithoutAttack = 0;
             if (this.timeAfterHits < 55) {
                 this.timeAfterHits = 55;
@@ -172,8 +172,8 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             timeAfterHits++;
         }
 
-        if (shootLazer) {
-            shootLazerProjectile();
+        if (shootLaser) {
+            shootLaserProjectile();
         }
 
         LivingEntity livingEntity = this.mob.getTarget();
@@ -203,8 +203,8 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             } else if (!hasShooted && this.timeAfterHits >= 60) {
                 if (!isJumpAttacking) { this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F); }
                 if (this.lastShoot == null || this.lastShoot.equals("lightning")) {
-                    this.lazerAttack();
-                } else if (this.lastShoot.equals("lazer")) {
+                    this.laserAttack();
+                } else if (this.lastShoot.equals("laser")) {
                     this.spawnLightning();
                 }
             }
@@ -266,7 +266,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             }
         }
         else if (this.waitForAnimation >= 70) {
-            this.shootLazer = false;
+            this.shootLaser = false;
             this.waitForAnimation = 0;
             this.animationTriggered = false;
             this.hasAttacked = false;
@@ -377,7 +377,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
         }
     }
 
-    private void lazerAttack() {
+    private void laserAttack() {
         if (!animationTriggered) {
             this.mob.setShootingLazer(true);
             this.mob.setLazerSoundStart(true);
@@ -388,21 +388,21 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
         if (this.waitForAnimation == 30) {
             LivingEntity livingEntity = this.mob.getTarget();
             this.mob.getLookControl().lookAt(livingEntity, 10.0F, 20.0F);
-            this.shootLazer = true;
+            this.shootLaser = true;
         }
         if (this.waitForAnimation == 70) {
-            this.shootLazer = false;
+            this.shootLaser = false;
             this.waitForAnimation = 0;
             this.animationTriggered = false;
             this.hasAttacked = false;
-            this.lastShoot = "lazer";
+            this.lastShoot = "laser";
             this.hasShooted = true;
             this.timeWithoutAttack = 0;
             this.timeAfterHits = 0;
         }
     }
 
-    private void shootLazerProjectile() {
+    private void shootLaserProjectile() {
         LivingEntity target = this.mob.getTarget();
         if (target != null && this.mob.getWorld() instanceof ServerWorld serverWorld) {
 
