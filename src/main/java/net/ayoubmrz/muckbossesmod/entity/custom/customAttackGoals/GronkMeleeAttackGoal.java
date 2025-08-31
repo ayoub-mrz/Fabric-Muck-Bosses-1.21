@@ -235,7 +235,7 @@ public class GronkMeleeAttackGoal extends Goal {
                     this.mob.getZ(),
                     ModSounds.GRONK_CHARGE,
                     SoundCategory.HOSTILE,
-                    1.0f,
+                    5.0f,
                     0.8f
             );
         }

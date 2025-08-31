@@ -76,5 +76,11 @@
     "sounds": [
       "muckbossesmod:rock_rolling_loop"
     ]
+  },
+  "particle_explosion": {
+    "subtitle": "sounds.muckbossesmod.particle_explosion",
+    "sounds": [
+      "muckbossesmod:particle_explosion"
+    ]
   }
 }

@@ -12,6 +12,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -94,17 +95,34 @@ public class UsefulMethods {
 
                 traceParticlePath(world, groundImpactPos, particleDirection, maxRange, damage, source);
 
-                if (i % 2 == 0) {
-                    source.getWorld().playSound(
-                            null,
-                            source.getX(),
-                            source.getY(),
-                            source.getZ(),
-                            SoundEvents.ENTITY_GENERIC_EXPLODE,
-                            SoundCategory.HOSTILE,
-                            0.6f,
-                            0.1f
-                    );
+                if (!source.getWorld().isClient) {
+                    ServerWorld serverWorld = (ServerWorld) source.getWorld();
+                    for (PlayerEntity player : serverWorld.getPlayers()) {
+                        serverWorld.playSound(
+                                player,
+                                source.getX(),
+                                source.getY(),
+                                source.getZ(),
+                                SoundEvents.ENTITY_GENERIC_EXPLODE,
+                                SoundCategory.BLOCKS,
+                                4.0F,
+                                1.0F
+                        );
+                    }
+                }
+
+                if (i % 10 == 0) {
+                    if (!world.isClient) {
+                        world.createExplosion(
+                                source,
+                                source.getX(),
+                                source.getY(),
+                                source.getZ(),
+                                0f,
+                                false,
+                                World.ExplosionSourceType.MOB
+                        );
+                    }
                 }
             }
         }
@@ -271,7 +289,7 @@ public class UsefulMethods {
 
     public static void playStepSound(LivingEntity source) {
         source.getWorld().playSound(null, source.getX(), source.getY(), source.getZ(),
-                ModSounds.HUGE_STEP, SoundCategory.HOSTILE, 2.0f, 0.6f);
+                ModSounds.HUGE_STEP, SoundCategory.HOSTILE, 5f, 0.6f);
     }
 
     public static void spawnProjectileSpread(World world, LivingEntity thrower, String projectile) {

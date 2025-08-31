@@ -3,6 +3,7 @@ package net.ayoubmrz.muckbossesmod.sound;
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
@@ -20,6 +21,7 @@ public class ModSounds {
     public static final SoundEvent LASER_CHARGE_UP = registerSoundEvent("laser_charge_up");
     public static final SoundEvent BIG_CHUNK_LOOP_AMBIENT = registerSoundEvent("big_chunk_loop_ambient");
     public static final SoundEvent ROCK_ROLLING_LOOP = registerSoundEvent("rock_rolling_loop");
+    public static final SoundEvent PARTICLE_EXPLOSION = registerSoundEvent("particle_explosion");
 
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = Identifier.of(MuckBossesMod.MOD_ID, name);

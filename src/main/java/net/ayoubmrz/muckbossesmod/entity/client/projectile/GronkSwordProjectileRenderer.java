@@ -29,7 +29,7 @@ public class GronkSwordProjectileRenderer extends EntityRenderer<GronkSwordProje
 
         if(!entity.isGrounded()) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getRenderingRotation() * 10f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getRenderingRotation() * 40f));
             matrices.translate(0, -1.0f, 0);
         }
 

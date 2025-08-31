@@ -50,6 +50,8 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
     private int secondAttackWindupTicks = 0;
     private boolean soundStart = false;
     private int soundTicks = 0;
+    private float soundVolum = 3.0f;
+    private float soundPitch = 0.6f;
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Blue Guardian"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
@@ -93,27 +95,27 @@ public class BlueGuardianEntity extends HostileEntity implements GeoEntity {
 
         if (isLazerSoundStart()) {
             this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    ModSounds.LASER_CHARGE_UP, SoundCategory.HOSTILE, 1.0f, 0.8f);
+                    ModSounds.LASER_CHARGE_UP, SoundCategory.HOSTILE, 5f, 0.8f);
             setLazerSoundStart(false);
         }
 
         if (this.isAlive()) {
             if (!isLazerSoundStart() && soundStart && soundTicks == 25) {
                 this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    ModSounds.GUARDIAN_AMBIENT_2, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                    ModSounds.GUARDIAN_AMBIENT_2, SoundCategory.HOSTILE, soundVolum, soundPitch);
             } else if (!isLazerSoundStart() && soundStart && soundTicks == 50) {
                 this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                        ModSounds.GUARDIAN_AMBIENT_4, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                        ModSounds.GUARDIAN_AMBIENT_4, SoundCategory.HOSTILE, soundVolum, soundPitch);
             } else if (!isLazerSoundStart() && soundStart && soundTicks == 75) {
                 this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, soundVolum, soundPitch);
             } else if (!isLazerSoundStart() && soundStart && soundTicks == 100) {
                 this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                        ModSounds.GUARDIAN_AMBIENT_1, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                        ModSounds.GUARDIAN_AMBIENT_1, SoundCategory.HOSTILE, soundVolum, soundPitch);
                 this.soundTicks = 0;
             } else if (!soundStart) {
                 this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, 0.2f, 0.6f);
+                        ModSounds.GUARDIAN_AMBIENT_3, SoundCategory.HOSTILE, soundVolum, soundPitch);
                 this.soundStart = true;
             }
         }

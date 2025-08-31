@@ -67,7 +67,7 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
         super.tick();
 
         this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
-                ModSounds.BLADE_MOVE, SoundCategory.NEUTRAL, 0.4f, 0.2f);
+                ModSounds.BLADE_MOVE, SoundCategory.NEUTRAL, 4f, 0.2f);
 
         if (this.originalVelocity != null) {
             this.setVelocity(this.originalVelocity);
