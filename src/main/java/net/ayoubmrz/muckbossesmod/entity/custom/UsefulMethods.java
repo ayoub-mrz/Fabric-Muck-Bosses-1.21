@@ -95,22 +95,6 @@ public class UsefulMethods {
 
                 traceParticlePath(world, groundImpactPos, particleDirection, maxRange, damage, source);
 
-                if (!source.getWorld().isClient) {
-                    ServerWorld serverWorld = (ServerWorld) source.getWorld();
-                    for (PlayerEntity player : serverWorld.getPlayers()) {
-                        serverWorld.playSound(
-                                player,
-                                source.getX(),
-                                source.getY(),
-                                source.getZ(),
-                                SoundEvents.ENTITY_GENERIC_EXPLODE,
-                                SoundCategory.BLOCKS,
-                                4.0F,
-                                1.0F
-                        );
-                    }
-                }
-
                 if (i % 10 == 0) {
                     if (!world.isClient) {
                         world.createExplosion(
@@ -176,8 +160,17 @@ public class UsefulMethods {
                         traceParticlePath(world, startPos, particleDirection, maxRange, damage, source);
 
                         if (particleIndex % 2 == 0) {
-                            world.playSound(null, source.getX(), source.getY(), source.getZ(),
-                                    SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 0.6f, 0.1f);
+                            if (!world.isClient) {
+                                world.createExplosion(
+                                        source,
+                                        source.getX(),
+                                        source.getY(),
+                                        source.getZ(),
+                                        0f,
+                                        false,
+                                        World.ExplosionSourceType.MOB
+                                );
+                            }
                         }
                     });
 
