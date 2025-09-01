@@ -2,6 +2,7 @@ package net.ayoubmrz.muckbossesmod.item;
 
 import net.ayoubmrz.muckbossesmod.MuckBossesMod;
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
+import net.ayoubmrz.muckbossesmod.item.custom.ChunkiumArmorItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
@@ -69,6 +70,22 @@ public class ModItems {
                     .attributeModifiers(createAttributeModifiers(31.0F, -2.4F))
                     .component(DataComponentTypes.TOOL, MuckItem.createToolComponent()), 31.0F, -2.4F));
 
+    public static final Item RAW_CHUNKIUM = registerItem("raw_chunkium", new Item( new Item.Settings().rarity(Rarity.RARE)));
+    public static final Item CHUNKIUM_INGOT = registerItem("chunkium_ingot", new Item( new Item.Settings().rarity(Rarity.RARE)));
+
+    public static final Item CHUNKIUM_HELMET = registerItem("chunkium_helmet",
+            new ChunkiumArmorItem(ModArmorMaterials.CHUNKIUM_ARMOR_MATERIAL, ArmorItem.Type.HELMET, new Item.Settings().rarity(Rarity.RARE)
+                    .maxDamage(ArmorItem.Type.HELMET.getMaxDamage(30))));
+    public static final Item CHUNKIUM_CHESTPLATE = registerItem("chunkium_chestplate",
+            new ChunkiumArmorItem(ModArmorMaterials.CHUNKIUM_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.RARE)
+                    .maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(30))));
+    public static final Item CHUNKIUM_LEGGINGS = registerItem("chunkium_leggings",
+            new ChunkiumArmorItem(ModArmorMaterials.CHUNKIUM_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.RARE)
+                    .maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(30))));
+    public static final Item CHUNKIUM_BOOTS = registerItem("chunkium_boots",
+            new ChunkiumArmorItem(ModArmorMaterials.CHUNKIUM_ARMOR_MATERIAL, ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.RARE)
+                    .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(30))));
+
     private static AttributeModifiersComponent createAttributeModifiers(float attackDamage, float attackSpeed) {
         return AttributeModifiersComponent.builder()
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE,
@@ -99,6 +116,8 @@ public class ModItems {
             entries.add(SPEAR_TIP);
             entries.add(HAMMER_SHAFT);
             entries.add(RUBY);
+            entries.add(RAW_CHUNKIUM);
+            entries.add(CHUNKIUM_INGOT);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
             entries.add(CHIEF_SPEAR);
@@ -106,6 +125,10 @@ public class ModItems {
             entries.add(GRONK_SWORD);
             entries.add(NIGHT_BLADE);
             entries.add(WYVERN_DAGGER);
+            entries.add(CHUNKIUM_HELMET);
+            entries.add(CHUNKIUM_CHESTPLATE);
+            entries.add(CHUNKIUM_LEGGINGS);
+            entries.add(CHUNKIUM_BOOTS);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
             entries.add(GRONK_SPAWN_EGG);

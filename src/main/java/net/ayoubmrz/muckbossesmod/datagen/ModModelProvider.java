@@ -52,5 +52,13 @@ public class ModModelProvider extends FabricModelProvider {
 
        itemModelGenerator.register(ModItems.BLACK_SHARD, Models.GENERATED);
 
+        itemModelGenerator.register(ModItems.RAW_CHUNKIUM, Models.GENERATED);
+        itemModelGenerator.register(ModItems.CHUNKIUM_INGOT, Models.GENERATED);
+
+        itemModelGenerator.register(ModItems.CHUNKIUM_HELMET, Models.GENERATED);
+        itemModelGenerator.register(ModItems.CHUNKIUM_CHESTPLATE, Models.GENERATED);
+        itemModelGenerator.register(ModItems.CHUNKIUM_LEGGINGS, Models.GENERATED);
+        itemModelGenerator.register(ModItems.CHUNKIUM_BOOTS, Models.GENERATED);
+
     }
 }

@@ -1,8 +1,10 @@
 package net.ayoubmrz.muckbossesmod.datagen;
 
+import net.ayoubmrz.muckbossesmod.item.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.ItemTags;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -13,6 +15,12 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+
+        getOrCreateTagBuilder(ItemTags.TRIMMABLE_ARMOR)
+                .add(ModItems.CHUNKIUM_HELMET)
+                .add(ModItems.CHUNKIUM_CHESTPLATE)
+                .add(ModItems.CHUNKIUM_LEGGINGS)
+                .add(ModItems.CHUNKIUM_BOOTS);
 
     }
 }

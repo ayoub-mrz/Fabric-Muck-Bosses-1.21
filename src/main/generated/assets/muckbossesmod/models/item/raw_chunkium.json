@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "muckbossesmod:item/raw_chunkium"
+  }
+}

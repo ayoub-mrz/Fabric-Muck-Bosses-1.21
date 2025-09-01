@@ -45,6 +45,14 @@ public class ModItemGroups {
                         entries.add(ModItems.PURPLE_GUARDIAN_SPAWN_EGG);
                         entries.add(ModItems.BIG_CHUNK_SPAWN_EGG);
 
+                        entries.add(ModItems.RAW_CHUNKIUM);
+                        entries.add(ModItems.CHUNKIUM_INGOT);
+
+                        entries.add(ModItems.CHUNKIUM_HELMET);
+                        entries.add(ModItems.CHUNKIUM_CHESTPLATE);
+                        entries.add(ModItems.CHUNKIUM_LEGGINGS);
+                        entries.add(ModItems.CHUNKIUM_BOOTS);
+
                     }).build());
 
     public static void registerItemGroups() {

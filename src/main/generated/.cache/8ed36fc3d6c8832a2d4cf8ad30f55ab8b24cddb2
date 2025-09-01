@@ -1,12 +1,16 @@
-// 1.21	2025-08-12T17:13:00.5700047	Muck Bosses Mod/Model Definitions
+// 1.21	2025-09-01T08:43:41.9124296	Muck Bosses Mod/Model Definitions
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\blue_guardian_spawn_egg.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\gronk_spawn_egg.json
+1fccae435622e458e41017235c929dc833ea1caf assets\muckbossesmod\models\item\chunkium_ingot.json
 cdf79c40beb78f6548fdf4b8a0aee407d3512304 assets\muckbossesmod\models\item\purple_gem.json
+c1c6c6113944c60e5b849eb3732359beee2a3db3 assets\muckbossesmod\models\item\raw_chunkium.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\green_guardian_spawn_egg.json
+d664e84cdb68096536e672d069284f267b647906 assets\muckbossesmod\models\item\chunkium_boots.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\white_guardian_spawn_egg.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\yellow_guardian_spawn_egg.json
 9f4fbff1372329ae1d99a108e5f11008db1c6f75 assets\muckbossesmod\models\item\red_gem.json
 79546fc02fb5c55d5bd60a449294ef3b99d9ba2e assets\muckbossesmod\models\item\white_gem.json
+251f53bd3dc3f466a5c214d8a08ff8ff0c81e0de assets\muckbossesmod\models\item\chunkium_helmet.json
 04f072aef2e77aa34b016ef38a8629fc4734838a assets\muckbossesmod\models\item\blue_gem.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\chief_spawn_egg.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\purple_guardian_spawn_egg.json
@@ -14,5 +18,6 @@ cdf79c40beb78f6548fdf4b8a0aee407d3512304 assets\muckbossesmod\models\item\purple
 906f2b4ab0c28950798f31852a90bd9477f6ebe4 assets\muckbossesmod\models\item\black_shard.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\big_chunk_spawn_egg.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\red_guardian_spawn_egg.json
+c59f0ea7ec5db1a9c8c35dba00b244420a37a57e assets\muckbossesmod\models\item\chunkium_leggings.json
 4c42ea8ae6e4febc304cfe1ae84e987d2cc2de61 assets\muckbossesmod\models\item\green_gem.json
-63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\muckbossesmod\models\item\bob_spawn_egg.json
+98e76d5a2ff70d823899c4b29f6beeb729d602fa assets\muckbossesmod\models\item\chunkium_chestplate.json
