@@ -51,6 +51,7 @@ public class ModModelProvider extends FabricModelProvider {
        itemModelGenerator.register(ModItems.PURPle_GEM, Models.GENERATED);
 
        itemModelGenerator.register(ModItems.BLACK_SHARD, Models.GENERATED);
+       itemModelGenerator.register(ModItems.RUBY, Models.GENERATED);
 
         itemModelGenerator.register(ModItems.RAW_CHUNKIUM, Models.GENERATED);
         itemModelGenerator.register(ModItems.CHUNKIUM_INGOT, Models.GENERATED);

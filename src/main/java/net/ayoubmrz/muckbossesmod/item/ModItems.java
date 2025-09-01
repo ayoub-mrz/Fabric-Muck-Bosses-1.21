@@ -47,7 +47,7 @@ public class ModItems {
     public static final Item BLACK_SHARD = registerItem("black_shard", new Item( new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item SPEAR_TIP = registerItem("spear_tip", new Item( new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item HAMMER_SHAFT = registerItem("hammer_shaft", new Item( new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
-    public static final Item RUBY = registerItem("ruby", new Item( new Item.Settings().maxCount(16)));
+    public static final Item RUBY = registerItem("ruby", new Item( new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)));
 
     public static final Item WYVERN_DAGGER = registerItem("wyvern_dagger",
             new MuckItem((new Item.Settings()).rarity(Rarity.EPIC).maxDamage(250)
