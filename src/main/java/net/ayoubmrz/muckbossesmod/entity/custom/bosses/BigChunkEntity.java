@@ -11,11 +11,14 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
@@ -97,6 +100,19 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity, BaseValu
         float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
         this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
         this.setHealth(finalHealth);
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (source.getAttacker() instanceof PlayerEntity player) {
+            ItemStack heldItem = player.getMainHandStack();
+
+            if (heldItem.getItem() instanceof PickaxeItem) {
+                amount *= 1.7f;
+            }
+        }
+
+        return super.damage(source, amount);
     }
 
     @Override
