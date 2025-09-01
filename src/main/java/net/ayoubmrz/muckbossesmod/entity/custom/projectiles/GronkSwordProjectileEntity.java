@@ -90,7 +90,13 @@ public class GronkSwordProjectileEntity extends PersistentProjectileEntity {
         hitEntities.add(hitEntity);
 
         if (hitEntity instanceof PlayerEntity player) {
-            player.damage(this.getDamageSources().thrown(this, this.getOwner()), 6.0f);
+            float damage = 14.0f;
+
+            if (this.getOwner() instanceof GronkEntity gronk) {
+                damage = gronk.swordThrow;
+            }
+
+            player.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
             hasHitPlayer = true;
 
             if (!this.getWorld().isClient) {

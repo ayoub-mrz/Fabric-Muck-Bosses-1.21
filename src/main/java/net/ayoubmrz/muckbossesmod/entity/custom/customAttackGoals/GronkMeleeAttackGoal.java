@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkBladeProjectileEntity;
@@ -145,7 +146,7 @@ public class GronkMeleeAttackGoal extends Goal {
             this.particleAttackTimer--;
 
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                UsefulMethods.spawnDamagingParticles(12, this.mob, 1.0, 20.0f, 4.0, false);
+                UsefulMethods.spawnDamagingParticles(8, this.mob, 1.8, this.mob.bladeHits, 2.5, false);
             }
 
             if (this.particleAttackTimer <= 0) {

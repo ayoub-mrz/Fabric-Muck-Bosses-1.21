@@ -45,6 +45,11 @@ public class YellowGuardianEntity extends HostileEntity implements GeoEntity, Gu
 
     private final int playersCount = this.getWorld().getPlayers().size();
     private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+    public float dayMultiplier = (float) Math.pow(DAMAGE_MULTIPLIER, numberOfDays - 1);
+
+    public float slap = BASE_SLAP * dayMultiplier;
+    public float laser = BASE_LASER * dayMultiplier;
+    public float lightning = BASE_LIGHTNING * dayMultiplier;
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
@@ -63,6 +68,16 @@ public class YellowGuardianEntity extends HostileEntity implements GeoEntity, Gu
 
     public YellowGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Override
+    public float getLaser() {
+        return laser;
+    }
+
+    @Override
+    public float getLightning() {
+        return lightning;
     }
 
     @Override
@@ -147,6 +162,8 @@ public class YellowGuardianEntity extends HostileEntity implements GeoEntity, Gu
         float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
         this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
         this.setHealth(finalHealth);
+
+        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(slap);
     }
 
     private void performFirstAttack() {

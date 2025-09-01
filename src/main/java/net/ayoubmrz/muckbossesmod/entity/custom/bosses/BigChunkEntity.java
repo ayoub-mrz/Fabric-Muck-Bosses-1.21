@@ -36,10 +36,17 @@ public class BigChunkEntity extends HostileEntity implements GeoEntity, BaseValu
 
     private final int playersCount = this.getWorld().getPlayers().size();
     private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+    private float dayMultiplier = (float) Math.pow(DAMAGE_MULTIPLIER, numberOfDays - 1);
+
+    public float clubHit = BASE_CLUB_HIT * dayMultiplier;
+    public float clubSwing = BASE_CLUB_SWING * dayMultiplier;
+    public float rocksSpread = BASE_ROCKS_SPREAD * dayMultiplier;
 
     private int shootingTicks = 0;
     private int stepSoundTicks = 0;
     private boolean hasInitializedHealth = false;
+
+
 
     private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Big Chunk"),
             BossBar.Color.PURPLE, BossBar.Style.PROGRESS);

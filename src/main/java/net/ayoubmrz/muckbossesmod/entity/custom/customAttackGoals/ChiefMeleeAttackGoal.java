@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.ChiefSpearProjectileEntity;
@@ -166,7 +167,7 @@ public class ChiefMeleeAttackGoal extends Goal {
             this.particleAttackTimer--;
 
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
-                UsefulMethods.spawnDamagingParticles(this.particlesNumber, this.mob, 0.0, 20.0f, 4.0, false);
+                UsefulMethods.spawnDamagingParticles(this.particlesNumber, this.mob, 0.0, this.mob.spin, 4.0, false);
             }
 
             if (this.particleAttackTimer <= 0) {
@@ -370,7 +371,7 @@ public class ChiefMeleeAttackGoal extends Goal {
         if (jumpTargetPos == null) return;
 
         // Create landing impact area (3x3 blocks around landing point)
-        double impactRadius = 2.0;
+        double impactRadius = 3.0;
 
         // Find entities in impact area
         Box impactArea = new Box(
@@ -382,7 +383,7 @@ public class ChiefMeleeAttackGoal extends Goal {
                 entity != this.mob && entity instanceof PlayerEntity
         ).forEach(entity -> {
             // Damage the player
-            entity.damage(this.mob.getDamageSources().mobAttack(this.mob), 8.0f);
+            entity.damage(this.mob.getDamageSources().mobAttack(this.mob), this.mob.jump);
 
             // Apply strong knockback
             UsefulMethods.applyKnockback(entity, this.mob, 0.5f, 2.0f);

@@ -1,5 +1,6 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BigChunkEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
@@ -177,11 +178,11 @@ public class BigChunkMeleeAttackGoal extends Goal {
 
             if (this.particleAttackTimer > 0 && this.particleAttackTimer % 2 == 0) {
                 if (this.lastAttack == null || this.lastAttack.equals("attack")) {
-                    UsefulMethods.spawnDamagingParticles(12, this.mob, 8.0,
-                            20.0f, 6.0, false);
+                    UsefulMethods.spawnDamagingParticles(12, this.mob, 7.0,
+                            this.mob.clubHit, 6.0, false);
                 } else {
                     UsefulMethods.spawnDamagingParticles(12, this.mob, 3.0,
-                            20.0f, 10.0, true);
+                            this.mob.clubSwing, 10.0, true);
                 }
             }
 

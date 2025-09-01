@@ -1,6 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian.GuardianEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
@@ -353,7 +354,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             double distance = entity.squaredDistanceTo(centerX, centerY, centerZ);
 
             if (distance <= radius * radius) {
-                float damage = 8.0f;
+                float damage = this.mob.getLightning();
                 entity.damage(world.getDamageSources().lightningBolt(), damage);
 
                 UsefulMethods.applyKnockback(entity, this.mob, 0.02f, 0.2f);
@@ -590,7 +591,7 @@ public class GuardianMeleeAttackGoal<T extends HostileEntity & GuardianEntity> e
             );
 
             if (distanceToLine <= 2.0 & entity.getClass() != this.mob.getClass()) {
-                float damage = 6.0f;
+                float damage = this.mob.getLaser();
                 entity.damage(world.getDamageSources().mobAttack(this.mob), damage);
 
                 UsefulMethods.applyKnockback(entity, this.mob, 0.05f, 0.05f);

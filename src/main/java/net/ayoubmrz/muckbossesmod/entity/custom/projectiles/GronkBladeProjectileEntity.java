@@ -2,6 +2,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -29,7 +30,6 @@ import java.util.Set;
 public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
     private final Set<Entity> hitEntities = new HashSet<>();
     private boolean hasHitPlayer = false;
-    private float damage = 20.0f;
     private Vec3d originalVelocity;
     private double targetSpeed = 0.8;
     private boolean hasHitBlock = false;
@@ -155,6 +155,11 @@ public class GronkBladeProjectileEntity extends PersistentProjectileEntity {
         hitEntities.add(hitEntity);
 
         if (hitEntity instanceof LivingEntity livingEntity) {
+            float damage = 14.0f;
+
+            if (this.getOwner() instanceof GronkEntity gronk) {
+                damage = gronk.bladeSpread;
+            }
             livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
 
             UsefulMethods.applyKnockback(hitEntity, this, 0.8f, 4.5f);

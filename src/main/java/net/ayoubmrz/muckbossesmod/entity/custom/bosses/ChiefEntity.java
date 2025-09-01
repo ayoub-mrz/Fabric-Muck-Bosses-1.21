@@ -44,6 +44,12 @@ public class ChiefEntity extends HostileEntity implements GeoEntity, BaseValues 
 
     private final int playersCount = this.getWorld().getPlayers().size();
     private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+    private float dayMultiplier = (float) Math.pow(DAMAGE_MULTIPLIER, numberOfDays - 1);
+
+    public float spearHit = BASE_SPEAR_HIT * dayMultiplier;
+    public float spearThrow = BASE_SPEAR_THROW * dayMultiplier;
+    public float spin = BASE_SPIN * dayMultiplier;
+    public float jump = BASE_JUMP * dayMultiplier;
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
@@ -109,6 +115,8 @@ public class ChiefEntity extends HostileEntity implements GeoEntity, BaseValues 
         float finalHealth = baseHealth * playerMultiplier * dayMultiplier;
         this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
         this.setHealth(finalHealth);
+
+        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(spearHit);
     }
 
     public void startAttackWindup() {

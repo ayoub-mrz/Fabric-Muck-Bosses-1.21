@@ -40,6 +40,11 @@ public class GronkEntity extends HostileEntity implements GeoEntity, BaseValues 
 
     private final int playersCount = this.getWorld().getPlayers().size();
     private final int numberOfDays = (int) (this.getWorld().getTimeOfDay() / 24000L) + 1;
+    private float dayMultiplier = (float) Math.pow(DAMAGE_MULTIPLIER, numberOfDays - 1);
+
+    public float bladeHits = BASE_BLADE_HITS * dayMultiplier;
+    public float swordThrow = BASE_SWORD_THROW * dayMultiplier;
+    public float bladeSpread = BASE_BLADES_SPREAD * dayMultiplier;
 
     private boolean isAttackWindingUp = false;
     private int windupTicks = 0;
@@ -55,6 +60,8 @@ public class GronkEntity extends HostileEntity implements GeoEntity, BaseValues 
     @Override
     public void tick() {
         super.tick();
+        System.out.println(dayMultiplier);
+        System.out.println(swordThrow);
 
         if (!hasInitializedHealth) {
             initializeDynamicHealth();

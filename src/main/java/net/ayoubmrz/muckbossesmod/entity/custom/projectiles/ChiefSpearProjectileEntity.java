@@ -3,6 +3,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -69,7 +70,12 @@ public class ChiefSpearProjectileEntity extends PersistentProjectileEntity {
         hitEntities.add(hitEntity);
 
         if (hitEntity instanceof LivingEntity livingEntity) {
-            livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), 6.0f);
+            float damage = 14.0f;
+
+            if (this.getOwner() instanceof ChiefEntity chief) {
+                damage = chief.spearThrow;
+            }
+            livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
             hasHitPlayer = true;
 
             this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),

@@ -2,6 +2,8 @@ package net.ayoubmrz.muckbossesmod.entity.custom.projectiles;
 
 import net.ayoubmrz.muckbossesmod.entity.ModEntities;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BigChunkEntity;
+import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -184,6 +186,11 @@ public class ChunkyRockProjectileEntity extends PersistentProjectileEntity {
         hitEntities.add(hitEntity);
 
         if (hitEntity instanceof LivingEntity livingEntity) {
+            float damage = 14.0f;
+
+            if (this.getOwner() instanceof BigChunkEntity bigChunk) {
+                damage = bigChunk.rocksSpread;
+            }
             livingEntity.damage(this.getDamageSources().thrown(this, this.getOwner()), damage);
 
             UsefulMethods.applyKnockback(hitEntity, this, 0.8f, 4.5f);
