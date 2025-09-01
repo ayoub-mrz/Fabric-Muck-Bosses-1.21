@@ -247,6 +247,7 @@ public class RedGuardianEntity extends HostileEntity implements GeoEntity, Guard
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0F)
                 .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.0F)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0F)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0F);
     }
 
