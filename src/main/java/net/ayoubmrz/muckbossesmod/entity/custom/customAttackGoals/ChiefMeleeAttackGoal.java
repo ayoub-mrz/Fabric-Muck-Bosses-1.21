@@ -130,6 +130,7 @@ public class ChiefMeleeAttackGoal extends Goal {
         isJumpAttacking = false;
         jumpTargetPos = null;
         jumpAttackPhase = 0;
+        this.mob.setChiefStats("chief_with_spear");
     }
 
     public boolean shouldRunEveryTick() {

@@ -114,6 +114,7 @@ public class GronkMeleeAttackGoal extends Goal {
         this.hasShooted = false;
         this.timeAfterHits = 0;
         this.lastShoot = null;
+        this.mob.setGronkStats("gronk");
     }
 
     public boolean shouldRunEveryTick() {

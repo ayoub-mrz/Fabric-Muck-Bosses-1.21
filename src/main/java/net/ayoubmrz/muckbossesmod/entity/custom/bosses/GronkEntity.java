@@ -60,8 +60,6 @@ public class GronkEntity extends HostileEntity implements GeoEntity, BaseValues 
     @Override
     public void tick() {
         super.tick();
-        System.out.println(dayMultiplier);
-        System.out.println(swordThrow);
 
         if (!hasInitializedHealth) {
             initializeDynamicHealth();
