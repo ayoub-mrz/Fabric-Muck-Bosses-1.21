@@ -26,7 +26,7 @@ public interface BaseValues {
 
     // Guardians
     float BASE_SLAP = 12.0f;
-    float BASE_LASER = 8.0f;
+    float BASE_LASER = 5.0f;
     float BASE_LIGHTNING = 19.0f;
 
 }

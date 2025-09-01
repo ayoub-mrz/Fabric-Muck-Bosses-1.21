@@ -15,42 +15,42 @@ public class ModEntities {
     public static final EntityType<GronkEntity> GRONK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "gronk"),
             EntityType.Builder.create(GronkEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
 
     public static final EntityType<WhiteGuardianEntity> WHITE_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "white_guardian"),
             EntityType.Builder.create(WhiteGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
     public static final EntityType<BlueGuardianEntity> BLUE_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "blue_guardian"),
             EntityType.Builder.create(BlueGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
     public static final EntityType<GreenGuardianEntity> GREEN_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "green_guardian"),
             EntityType.Builder.create(GreenGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
     public static final EntityType<YellowGuardianEntity> YELLOW_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "yellow_guardian"),
             EntityType.Builder.create(YellowGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
     public static final EntityType<RedGuardianEntity> RED_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "red_guardian"),
             EntityType.Builder.create(RedGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
     public static final EntityType<PurpleGuardianEntity> PURPLE_GUARDIAN = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "purple_guardian"),
             EntityType.Builder.create(PurpleGuardianEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
 
     public static final EntityType<ChiefEntity> CHIEF = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "chief"),
             EntityType.Builder.create(ChiefEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(1.8f, 5.0f).build());
 
     public static final EntityType<BigChunkEntity> BIG_CHUNK = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "big_chunk"),
             EntityType.Builder.create(BigChunkEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(1.8f, 4f).build());
+                    .dimensions(5.2f, 12.5f).build());
 
     public static final EntityType<ChiefSpearProjectileEntity> CHIEF_SPEAR = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(MuckBossesMod.MOD_ID, "chief_spear"),
