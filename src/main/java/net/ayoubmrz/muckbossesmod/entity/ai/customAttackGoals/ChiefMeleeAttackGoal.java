@@ -1,6 +1,5 @@
-package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
+package net.ayoubmrz.muckbossesmod.entity.ai.customAttackGoals;
 
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.ChiefEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.ChiefSpearProjectileEntity;

@@ -1,9 +1,7 @@
-package net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals;
+package net.ayoubmrz.muckbossesmod.entity.ai.customAttackGoals;
 
-import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.GronkEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
-import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkBladeProjectileEntity;
 import net.ayoubmrz.muckbossesmod.entity.custom.projectiles.GronkSwordProjectileEntity;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.LivingEntity;

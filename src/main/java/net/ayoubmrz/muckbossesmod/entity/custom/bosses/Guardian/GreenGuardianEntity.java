@@ -2,7 +2,7 @@ package net.ayoubmrz.muckbossesmod.entity.custom.bosses.Guardian;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
 import net.ayoubmrz.muckbossesmod.entity.custom.bosses.BaseValues;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.GuardianMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.ai.customAttackGoals.GuardianMeleeAttackGoal;
 import net.ayoubmrz.muckbossesmod.sound.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

@@ -352,7 +352,7 @@ public class UsefulMethods {
             if (thrower instanceof PlayerEntity player) {
                 offsetY = 1.0;
             } else {
-                offsetY = 1.5;
+                offsetY = 10;
             }
 
             for (int i = 0; i < 5; i++) {

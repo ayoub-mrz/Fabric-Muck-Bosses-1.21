@@ -1,7 +1,7 @@
 package net.ayoubmrz.muckbossesmod.entity.custom.bosses;
 
 import net.ayoubmrz.muckbossesmod.entity.custom.UsefulMethods;
-import net.ayoubmrz.muckbossesmod.entity.custom.customAttackGoals.BigChunkMeleeAttackGoal;
+import net.ayoubmrz.muckbossesmod.entity.ai.customAttackGoals.BigChunkMeleeAttackGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
